@@ -3353,6 +3353,8 @@ function MemberApp({
   fbStatus
 }) {
   const [pg, setPg] = useState('beranda'),
+    [mBayar, setMBayar] = useState(false),
+    [bayarNom, setBayarNom] = useState(''),
     [mSetor, setMSetor] = useState(false),
     [fSetor, setFSetor] = useState({
       sid: '',
