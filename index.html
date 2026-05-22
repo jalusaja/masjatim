@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Koperasi MAS Jatim</title>
+<meta name="theme-color" content="#085041">
+<meta name="description" content="Aplikasi Manajemen Koperasi MAS Jatim">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="MAS Jatim">
+<link rel="manifest" id="pwa-manifest">
+<link rel="stylesheet" href="https://unpkg.com/@tabler/icons-webfont@3.7.0/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--t:#0F6E56;--t2:#1D9E75;--tl:#E1F5EE;--t3:#085041;--bl:#E6F1FB;--rl:#FCEBEB;--gl:#EAF3DE;--al:#FAEEDA;--bg:#F4F5F0;--sur:#fff;--brd:#e2e2da;--txt:#1a1a1a;--txt2:#6b;--r:10px;--rs:6px}
+body{font-family:'Segoe UI',system-ui,sans-serif;font-size:13px;background:var(--bg);color:var(--txt);min-height:100vh}
+.flex{display:flex}.fc{flex-direction:column}.f1{flex:1}.oh{overflow:hidden}.oy{overflow-y:auto}
+.card{background:var(--sur);border:1px solid var(--brd);border-radius:var(--r);padding:14px;margin-bottom:10px}
+.stat-box{background:#f7f7f3;border-radius:var(--rs);padding:10px 12px}
+.stat-lbl{font-size:10px;color:#666;margin-bottom:3px}.stat-val{font-size:16px;font-weight:600}
+.btn{display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border-radius:var(--rs);border:1px solid var(--brd);cursor:pointer;font-size:12px;background:var(--sur);color:var(--txt);transition:background .12s;font-family:inherit;line-height:1}
+.btn:hover{background:#f0f0eb}
+.btn-p{background:var(--t);color:#fff;border-color:var(--t)}.btn-p:hover{background:var(--t2)}
+.btn-grn{background:var(--gl);color:#3B6D11;border-color:#b6d98a}
+.btn-blu{background:var(--bl);color:#185FA5;border-color:#9dc5f0}
+.btn-pur{background:#F0EBF8;color:#5B21B6;border-color:#C4B0E8}
+.btn-red{background:var(--rl);color:#A32D2D;border-color:#F0B8B8}
+.btn-ora{background:#FEF3E2;color:#92400E;border-color:#FCD19B}
+.btn-xs{padding:3px 8px;font-size:11px}.btn-sm{padding:5px 10px;font-size:12px}
+.inp{width:100%;padding:7px 10px;border:1px solid var(--brd);border-radius:var(--rs);font-size:12px;background:var(--sur);color:var(--txt);outline:none}
+.inp:focus{border-color:var(--t2)}
+.inp-mono{font-family:monospace;font-size:11px}
+.sel{width:100%;padding:7px 10px;border:1px solid var(--brd);border-radius:var(--rs);font-size:12px;background:var(--sur);color:var(--txt);outline:none}
+.ta{width:100%;padding:8px 10px;border:1px solid var(--brd);border-radius:var(--rs);font-size:11px;font-family:monospace;background:#fafaf8;color:var(--txt);outline:none;resize:vertical}
+.ta:focus{border-color:var(--t2)}
+.fg{display:flex;flex-direction:column;gap:3px;margin-bottom:8px}
+.fg>label{font-size:10px;color:#666;font-weight:600;text-transform:uppercase;letter-spacing:.3px}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.bdg{display:inline-block;font-size:10px;padding:2px 8px;border-radius:99px;font-weight:600}
+.bg{background:var(--gl);color:#3B6D11}.bb{background:var(--bl);color:#185FA5}.br{background:var(--rl);color:#A32D2D}.ba{background:var(--al);color:#BA7517}.bt{background:var(--tl);color:var(--t)}
+table{width:100%;border-collapse:collapse}
+thead th{font-size:10px;font-weight:700;color:#666;padding:6px 8px;border-bottom:2px solid var(--brd);text-align:left;white-space:nowrap;text-transform:uppercase;letter-spacing:.3px}
+tbody td{font-size:12px;padding:7px 8px;border-bottom:1px solid var(--brd);color:var(--txt);vertical-align:middle}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover td{background:#f7f7f3}
+.tag{font-size:10px;background:#f0f0ea;color:#888;padding:2px 6px;border-radius:4px;font-family:monospace}
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.45);display:flex;align-items:center;justify-content:center;z-index:500}
+.modal-box{background:var(--sur);border-radius:var(--r);width:480px;max-height:92vh;overflow-y:auto;box-shadow:0 12px 40px rgba(0,0,0,0.15)}
+.modal-wide{width:680px}
+.modal-head{padding:14px 18px;border-bottom:1px solid var(--brd);display:flex;align-items:center;justify-content:space-between;font-size:14px;font-weight:600;position:sticky;top:0;background:var(--sur);z-index:1}
+.modal-body{padding:16px 18px}
+.modal-foot{padding:12px 18px;border-top:1px solid var(--brd);display:flex;justify-content:flex-end;gap:8px;position:sticky;bottom:0;background:var(--sur)}
+.ir{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--brd);font-size:12px}
+.ir:last-child{border-bottom:none}.ir-lbl{color:#666}
+.pbar{background:#ebebeb;border-radius:99px;height:5px}
+.pfill{background:var(--t2);height:5px;border-radius:99px;transition:width .3s}
+.bell-wrap{position:relative}
+.notif-panel{position:absolute;right:0;top:calc(100% + 8px);width:300px;background:var(--sur);border:1px solid var(--brd);border-radius:var(--r);z-index:400;box-shadow:0 4px 20px rgba(0,0,0,0.12);overflow:hidden}
+.np-head{padding:10px 14px;border-bottom:1px solid var(--brd);display:flex;align-items:center;justify-content:space-between;font-size:12px;font-weight:600}
+.ni{display:flex;gap:10px;padding:10px 14px;border-bottom:1px solid var(--brd);cursor:pointer}.ni:hover{background:#f7f7f3}.ni:last-child{border-bottom:none}.ni.unread{background:#f9fdf9}
+.ni-ic{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:14px}
+.ic-warn{background:var(--al);color:#BA7517}.ic-succ{background:var(--gl);color:#3B6D11}.ic-info{background:var(--bl);color:#185FA5}.ic-dang{background:var(--rl);color:#A32D2D}
+/* Login & Setup */
+.center-wrap{display:flex;align-items:center;justify-content:center;min-height:100vh;background:var(--bg);padding:16px}
+.login-card{background:var(--sur);border:1px solid var(--brd);border-radius:var(--r);padding:28px;width:360px;box-shadow:0 4px 24px rgba(0,0,0,0.07)}
+.setup-card{background:var(--sur);border:1px solid var(--brd);border-radius:var(--r);padding:0;width:560px;box-shadow:0 4px 24px rgba(0,0,0,0.07);overflow:hidden}
+.tab-bar{display:flex;background:#f0f0ea;border-radius:var(--rs);padding:3px;margin-bottom:16px;gap:2px}
+.tb{flex:1;padding:7px;text-align:center;border-radius:4px;font-size:12px;cursor:pointer;color:#666;border:none;background:transparent;font-family:inherit;transition:all .12s}
+.tb.on{background:var(--sur);color:var(--txt);font-weight:600;border:1px solid var(--brd)}
+.pin-dot{width:11px;height:11px;border-radius:50%;background:#ddd;display:inline-block;margin:0 3px;transition:background .1s}
+.pin-dot.filled{background:var(--t3)}
+.pin-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px}
+.pin-key{padding:11px;text-align:center;border:1px solid var(--brd);border-radius:var(--rs);cursor:pointer;font-size:16px;font-weight:500;background:var(--sur);font-family:inherit}
+.pin-key:hover{background:#f0f0ea}
+/* Setup wizard */
+.setup-header{background:var(--t3);padding:20px 24px;color:#fff}
+.setup-body{padding:20px 24px}
+.step-wrap{display:flex;gap:0;margin-bottom:20px;border-bottom:2px solid var(--brd)}
+.sw{flex:1;padding:10px 8px;text-align:center;font-size:11px;cursor:pointer;color:#888;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .12s}
+.sw.on{color:var(--t);border-bottom-color:var(--t);font-weight:600}
+.sw-num{width:20px;height:20px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;margin-bottom:4px;background:#f0f0ea;color:#888;display:block;margin:0 auto 4px}
+.sw.on .sw-num{background:var(--t);color:#fff}
+.sw.done .sw-num{background:var(--t2);color:#fff}
+.guide-step{background:#f7f7f3;border-radius:var(--rs);padding:12px;margin-bottom:10px;border-left:3px solid var(--t2)}
+.code-box{background:#1e1e1e;color:#d4d4d4;border-radius:var(--rs);padding:12px;font-family:monospace;font-size:11px;margin:8px 0;white-space:pre;overflow-x:auto;position:relative}
+.copy-btn{position:absolute;top:8px;right:8px;background:rgba(255,255,255,0.1);border:none;color:#fff;padding:3px 8px;border-radius:4px;font-size:10px;cursor:pointer;font-family:inherit}
+.copy-btn:hover{background:rgba(255,255,255,0.2)}
+/* Admin sidebar */
+.sidebar{width:172px;background:var(--t3);flex-shrink:0;display:flex;flex-direction:column}
+.s-logo{padding:16px 14px;border-bottom:1px solid rgba(255,255,255,0.1)}
+.s-brand{font-size:15px;font-weight:700;color:#fff}
+.s-sub{font-size:10px;color:rgba(255,255,255,.45);margin-top:2px}
+.nav-it{display:flex;align-items:center;gap:8px;padding:9px 14px;cursor:pointer;color:rgba(255,255,255,.6);font-size:12px;border-left:3px solid transparent;transition:all .12s}
+.nav-it:hover{background:rgba(255,255,255,.07);color:#fff}
+.nav-it.on{background:rgba(255,255,255,.12);color:#fff;border-left-color:var(--t2)}
+.topbar{background:var(--sur);padding:10px 18px;border-bottom:1px solid var(--brd);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.content-area{flex:1;overflow-y:auto;padding:16px;position:relative}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:10px}
+.sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.tw{overflow-x:auto}
+/* Member */
+.m-app{display:flex;flex-direction:column;height:100vh}
+.m-top{background:var(--t3);color:#fff;padding:12px 16px;flex-shrink:0}
+.m-nav{display:flex;background:var(--sur);border-bottom:1px solid var(--brd);flex-shrink:0}
+.mnav-btn{flex:1;display:flex;flex-direction:column;align-items:center;padding:8px 4px;cursor:pointer;border:none;background:transparent;font-family:inherit;color:#666;font-size:10px;gap:2px;border-top:2px solid transparent;transition:all .12s}
+.mnav-btn:hover{color:var(--t2)}.mnav-btn.on{color:var(--t);border-top-color:var(--t2)}
+.mnav-btn i{font-size:18px}
+.m-content{flex:1;overflow-y:auto;padding:14px;position:relative}
+.hero-card{background:var(--t);border-radius:var(--r);padding:18px;color:#fff;margin-bottom:12px}
+.qa-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
+.qa-btn{display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 6px;background:var(--sur);border:1px solid var(--brd);border-radius:var(--r);cursor:pointer;font-size:10px;color:#666;font-family:inherit;transition:all .12s}
+.qa-btn:hover{background:var(--tl);color:var(--t);border-color:var(--t2)}
+.qa-btn i{font-size:20px;color:var(--t)}
+.tx-row{display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--brd)}
+.tx-row:last-child{border-bottom:none}
+.export-bar{display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+/* Firebase status */
+.fb-status{display:inline-flex;align-items:center;gap:5px;font-size:10px;padding:3px 9px;border-radius:99px;font-weight:500}
+.fb-ok{background:#E8F5E9;color:#2E7D32}
+.fb-err{background:var(--rl);color:#A32D2D}
+.fb-sync{background:#FFF3E0;color:#E65100}
+.fb-dot{width:6px;height:6px;border-radius:50%;background:currentColor}
+/* Drop zone */
+.drop-zone{border:2px dashed var(--brd);border-radius:var(--r);padding:24px;text-align:center;cursor:pointer;transition:all .15s;background:#fafaf8}
+.drop-zone:hover,.drop-zone.drag-over{border-color:var(--t2);background:var(--tl)}
+.import-tabs{display:flex;border-bottom:2px solid var(--brd);margin-bottom:14px}
+.it{padding:8px 14px;cursor:pointer;font-size:12px;color:#666;border:none;background:transparent;font-family:inherit;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .12s}
+.it.on{color:var(--t);border-bottom-color:var(--t);font-weight:600}
+.step-indicator{display:flex;align-items:center;gap:6px;margin-bottom:14px}
+.step-dot{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0}
+.step-dot.done{background:var(--t);color:#fff}.step-dot.active{background:var(--t2);color:#fff}.step-dot.pending{background:#f0f0ea;color:#888}
+.step-line{flex:1;height:2px;background:#f0f0ea}.step-line.done{background:var(--t)}
+.result-box{border-radius:var(--rs);padding:16px;text-align:center}
+.result-succ{background:var(--gl);color:#1a4a00}.result-err{background:var(--rl);color:#5a0000}
+.alert-box{border-radius:var(--rs);padding:10px 12px;font-size:11px;margin-top:6px}
+.alert-teal{background:var(--tl);color:var(--t3)}.alert-warn{background:var(--al);color:#7a4e0e}
+/* PWA Install */
+.install-banner{position:fixed;bottom:12px;right:12px;background:var(--t3);color:#fff;border-radius:var(--r);padding:12px 16px;display:flex;align-items:center;gap:10px;z-index:1000;box-shadow:0 4px 20px rgba(0,0,0,0.2);max-width:300px;animation:slideUp .3s ease}
+@keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<!-- React + Libraries -->
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script>
+// PWA Setup
+(function(){
+  const m={name:"Koperasi MAS Jatim",short_name:"MAS Jatim",description:"Manajemen Koperasi",start_url:"./",display:"standalone",background_color:"#085041",theme_color:"#085041",icons:[{src:"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='32' fill='%23085041'/%3E%3Ctext x='96' y='130' font-size='100' text-anchor='middle'%3E%F0%9F%8F%A6%3C/text%3E%3C/svg%3E",sizes:"192x192",type:"image/svg+xml"}]};
+  try{const b=new Blob([JSON.stringify(m)],{type:'application/json'});document.getElementById('pwa-manifest').href=URL.createObjectURL(b);}catch(e){}
+  if('serviceWorker' in navigator){const sw=`const C='mas-v1';self.addEventListener('install',e=>e.waitUntil(caches.open(C).then(c=>c.addAll([self.registration.scope]))));self.addEventListener('fetch',e=>e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request))));`;try{const b=new Blob([sw],{type:'application/javascript'});navigator.serviceWorker.register(URL.createObjectURL(b));}catch(e){}}
+})();
+</script>
+<script type="text/babel">
+const {useState,useEffect,useRef,useCallback} = React;
+
+/* ── KONSTANTA ── */
+const JENIS=['Berjangka','Pendidikan','Mudharobah','Haji/Umroh','Qurban','Wadiah'];
+const JB={Berjangka:'bb',Pendidikan:'bg',Mudharobah:'bt','Haji/Umroh':'ba',Qurban:'bt',Wadiah:'bt'};
+const DOTS=['#1D9E75','#185FA5','#BA7517','#0F6E56','#3B6D11','#A32D2D'];
+const TODAY=new Date().toISOString().slice(0,10);
+const ADMIN_PWD='mas2025', MEMBER_PIN='1234';
+const fmt=n=>new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',minimumFractionDigits:0}).format(n);
+const fmtD=d=>{try{return new Date(d).toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'});}catch{return d;}};
+const newId=(p,l)=>p+String(l.length+1).padStart(3,'0');
+const TEMPLATES={anggota:{headers:['Nama','NIK','Telepon','Alamat','Bergabung','Status'],example:[['Siti Rahmawati','3519034501880001','08123456789','Jl. Mawar No.5 Madiun','2020-03-15','Aktif']]},simpanan:{headers:['ID Anggota','Jenis','Saldo','Bagi Hasil %','Tgl Buka','Jatuh Tempo'],example:[['A001','Berjangka','5000000','7','2024-01-15','2025-01-15']]},pinjaman:{headers:['ID Anggota','Jumlah','Tenor (bulan)','Bunga %/bln'],example:[['A001','10000000','12','1.5']]},transaksi:{headers:['ID Anggota','Jenis','Keterangan','Nominal','Tipe (K/D)','Tanggal'],example:[['A001','Setor Simpanan','Setoran Wadiah','500000','K',TODAY]]}};
+
+const initData=()=>({
+  anggota:[
+    {id:'A001',nama:'Siti Rahmawati',nik:'3519034501880001',phone:'08123456789',alamat:'Jl. Mawar No.5, Madiun',bergabung:'2020-03-15',status:'Aktif'},
+    {id:'A002',nama:'Budi Santoso',nik:'3519031205750002',phone:'08234567890',alamat:'Jl. Melati No.12, Madiun',bergabung:'2019-07-20',status:'Aktif'},
+    {id:'A003',nama:'Dewi Lestari',nik:'3519034512900003',phone:'08345678901',alamat:'Jl. Kenanga No.3, Madiun',bergabung:'2021-01-10',status:'Aktif'},
+    {id:'A004',nama:'Ahmad Fauzi',nik:'3519031506850004',phone:'08456789012',alamat:'Jl. Dahlia No.8, Madiun',bergabung:'2020-11-05',status:'Aktif'},
+    {id:'A005',nama:'Nurul Hidayah',nik:'3519034508920005',phone:'08567890123',alamat:'Jl. Anggrek No.15, Madiun',bergabung:'2022-04-18',status:'Aktif'},
+    {id:'A006',nama:'Hendra Wijaya',nik:'3519031710780006',phone:'08678901234',alamat:'Jl. Flamboyan No.7, Madiun',bergabung:'2019-09-30',status:'Aktif'},
+    {id:'A007',nama:'Rina Sukmawati',nik:'3519034202880007',phone:'08789012345',alamat:'Jl. Cempaka No.21, Madiun',bergabung:'2021-06-12',status:'Non-Aktif'},
+    {id:'A008',nama:'Doni Prasetyo',nik:'3519031309950008',phone:'08890123456',alamat:'Jl. Teratai No.4, Madiun',bergabung:'2023-02-28',status:'Aktif'},
+  ],
+  simpanan:[
+    {id:'S001',aid:'A001',jenis:'Berjangka',saldo:5000000,bh:7,tgl:'2024-01-15',jt:'2025-06-15'},
+    {id:'S002',aid:'A001',jenis:'Wadiah',saldo:1200000,bh:0,tgl:'2020-03-15',jt:null},
+    {id:'S003',aid:'A002',jenis:'Mudharobah',saldo:3500000,bh:6,tgl:'2023-07-20',jt:null},
+    {id:'S004',aid:'A002',jenis:'Haji/Umroh',saldo:8000000,bh:5,tgl:'2022-01-01',jt:null},
+    {id:'S005',aid:'A003',jenis:'Pendidikan',saldo:2500000,bh:5,tgl:'2021-08-10',jt:'2026-07-01'},
+    {id:'S006',aid:'A004',jenis:'Qurban',saldo:750000,bh:0,tgl:'2025-01-10',jt:'2025-06-07'},
+    {id:'S007',aid:'A005',jenis:'Berjangka',saldo:10000000,bh:7,tgl:'2024-04-18',jt:'2025-05-30'},
+    {id:'S008',aid:'A006',jenis:'Mudharobah',saldo:6200000,bh:6,tgl:'2022-10-05',jt:null},
+    {id:'S009',aid:'A008',jenis:'Wadiah',saldo:900000,bh:0,tgl:'2023-02-28',jt:null},
+  ],
+  pinjaman:[
+    {id:'P001',aid:'A001',jumlah:10000000,sisa:6500000,cicilan:1000000,bunga:1.5,tenor:12,ke:4,tgl:'2024-11-01',status:'Aktif'},
+    {id:'P002',aid:'A002',jumlah:5000000,sisa:0,cicilan:500000,bunga:1.5,tenor:10,ke:10,tgl:'2024-01-15',status:'Lunas'},
+    {id:'P003',aid:'A004',jumlah:15000000,sisa:12000000,cicilan:1500000,bunga:1.5,tenor:12,ke:2,tgl:'2025-02-01',status:'Aktif'},
+    {id:'P004',aid:'A006',jumlah:8000000,sisa:4000000,cicilan:800000,bunga:1.5,tenor:12,ke:6,tgl:'2024-06-10',status:'Aktif'},
+    {id:'P005',aid:'A008',jumlah:3000000,sisa:1500000,cicilan:300000,bunga:1.5,tenor:12,ke:5,tgl:'2024-10-05',status:'Aktif'},
+    {id:'P006',aid:'A003',jumlah:7000000,sisa:7000000,cicilan:0,bunga:1.5,tenor:12,ke:0,tgl:'2025-05-18',status:'Menunggu'},
+  ],
+  transaksi:[
+    {id:'T001',tgl:'2025-05-20',aid:'A001',jenis:'Setor Simpanan',ket:'Setoran Wadiah',nom:200000,tipe:'K'},
+    {id:'T002',tgl:'2025-05-19',aid:'A004',jenis:'Angsuran',ket:'Cicilan P003',nom:1500000,tipe:'K'},
+    {id:'T003',tgl:'2025-05-18',aid:'A003',jenis:'Pengajuan Pinjaman',ket:'Pengajuan P006',nom:7000000,tipe:'K'},
+    {id:'T004',tgl:'2025-05-17',aid:'A005',jenis:'Setor Simpanan',ket:'Setoran Berjangka',nom:1000000,tipe:'K'},
+    {id:'T005',tgl:'2025-05-15',aid:'A008',jenis:'Angsuran',ket:'Cicilan P005',nom:300000,tipe:'K'},
+    {id:'T006',tgl:'2025-05-10',aid:'A001',jenis:'Angsuran',ket:'Cicilan P001',nom:1000000,tipe:'K'},
+    {id:'T007',tgl:'2025-05-08',aid:'A002',jenis:'Bagi Hasil',ket:'Bagi Hasil Mudharobah',nom:175000,tipe:'D'},
+    {id:'T008',tgl:'2025-05-05',aid:'A006',jenis:'Setor Simpanan',ket:'Setoran Mudharobah',nom:500000,tipe:'K'},
+  ],
+});
+
+/* ── FIREBASE MANAGER ── */
+const DB_PATH='mas-koperasi/data';
+let fbApp=null, fbDb=null, fbListener=null;
+
+function initFirebase(cfg,onData,onStatus) {
+  try {
+    if(fbListener&&fbDb){fbDb.ref(DB_PATH).off('value',fbListener);fbListener=null;}
+    if(fbApp){try{fbApp.delete();}catch(e){}}
+    onStatus('connecting');
+    fbApp=firebase.initializeApp(cfg,'mas-app-'+Date.now());
+    fbDb=fbApp.database();
+    fbListener=fbDb.ref(DB_PATH).on('value',snap=>{
+      const val=snap.val();
+      if(val){onData(val);}
+      else{const init=initData();fbDb.ref(DB_PATH).set(init);onData(init);}
+      onStatus('connected');
+    },err=>{console.error('Firebase error:',err);onStatus('error');});
+  } catch(e) {
+    console.error('Firebase init error:',e);
+    onStatus('error');
+  }
+}
+function writeToFirebase(newData) {
+  if(fbDb)fbDb.ref(DB_PATH).set(newData);
+}
+function disconnectFirebase() {
+  if(fbListener&&fbDb){fbDb.ref(DB_PATH).off('value',fbListener);fbListener=null;}
+  if(fbApp){try{fbApp.delete();}catch(e){}}
+  fbApp=null;fbDb=null;
+}
+
+/* ── EXPORT FUNCTIONS ── */
+function downloadTemplate(type){
+  if(!window.XLSX)return;
+  const t=TEMPLATES[type],wb=window.XLSX.utils.book_new();
+  const ws=window.XLSX.utils.aoa_to_sheet([t.headers,...t.example]);
+  ws['!cols']=t.headers.map(()=>({wch:20}));
+  window.XLSX.utils.book_append_sheet(wb,ws,'Template');
+  window.XLSX.writeFile(wb,`template-${type}-mas-jatim.xlsx`);
+}
+function exportExcel(data){
+  if(!window.XLSX)return;
+  const wb=window.XLSX.utils.book_new(),gN=id=>data.anggota.find(a=>a.id===id)?.nama||id;
+  [['Anggota',data.anggota.map(a=>({ID:a.id,Nama:a.nama,NIK:a.nik,Telepon:a.phone,Alamat:a.alamat,Bergabung:a.bergabung,Status:a.status}))],
+   ['Simpanan',data.simpanan.map(s=>({'ID':s.id,'Anggota':gN(s.aid),'Jenis':s.jenis,'Saldo':s.saldo,'BH%':s.bh,'Tgl Buka':s.tgl,'Jatuh Tempo':s.jt||'-'}))],
+   ['Pinjaman',data.pinjaman.map(p=>({'ID':p.id,'Anggota':gN(p.aid),'Jumlah':p.jumlah,'Sisa':p.sisa,'Cicilan':p.cicilan,'Tenor':p.tenor,'Ke':p.ke,'Status':p.status}))],
+   ['Transaksi',data.transaksi.map(t=>({'ID':t.id,'Tanggal':t.tgl,'Anggota':gN(t.aid),'Jenis':t.jenis,'Ket':t.ket,'Nominal':t.nom,'Tipe':t.tipe==='K'?'Kredit':'Debet'}))]]
+  .forEach(([n,r])=>window.XLSX.utils.book_append_sheet(wb,window.XLSX.utils.json_to_sheet(r),n));
+  window.XLSX.writeFile(wb,'Data-MAS-Jatim.xlsx');
+}
+function exportPDF(data){
+  if(!window.jspdf)return;
+  const{jsPDF}=window.jspdf,doc=new jsPDF();
+  const totS=data.simpanan.reduce((s,x)=>s+x.saldo,0),totP=data.pinjaman.filter(p=>p.status==='Aktif').reduce((s,x)=>s+x.sisa,0);
+  let y=18;
+  doc.setFillColor(8,80,65);doc.rect(0,0,210,30,'F');doc.setTextColor(255,255,255);doc.setFontSize(14);doc.setFont('helvetica','bold');
+  doc.text('KOPERASI MANDIRI ARTHA SEJAHTERA',105,12,{align:'center'});doc.setFontSize(9);doc.setFont('helvetica','normal');doc.text('Laporan Keuangan · Per '+fmtD(TODAY),105,21,{align:'center'});
+  y=40;doc.setTextColor(0,0,0);doc.setFontSize(11);doc.setFont('helvetica','bold');doc.text('RINGKASAN KEUANGAN',14,y);y+=6;doc.setLineWidth(0.3);doc.setDrawColor(200,200,200);doc.line(14,y,196,y);y+=5;
+  [['Total Anggota',data.anggota.length+' orang'],['Aktif',data.anggota.filter(a=>a.status==='Aktif').length+' orang'],['Dana Simpanan',fmt(totS)],['Outstanding Pinjaman',fmt(totP)],['Rekening',data.simpanan.length+' rekening'],['Peminjam Aktif',data.pinjaman.filter(p=>p.status==='Aktif').length+' orang']].forEach(([l,v],i)=>{
+    if(i%2===0)doc.setFillColor(245,250,248);else doc.setFillColor(255,255,255);doc.rect(14,y-4,182,7,'F');doc.setTextColor(80,80,80);doc.text(l,18,y);doc.setTextColor(0,0,0);doc.setFont('helvetica','bold');doc.text(v,190,y,{align:'right'});doc.setFont('helvetica','normal');y+=7;
+  });
+  y+=5;doc.setFontSize(11);doc.setFont('helvetica','bold');doc.text('REKAP SIMPANAN',14,y);y+=6;doc.line(14,y,196,y);y+=5;
+  doc.setFillColor(8,80,65);doc.rect(14,y-4,182,7,'F');doc.setTextColor(255,255,255);doc.setFontSize(9);['Jenis','Rekening','Total Dana','Porsi'].forEach((h,i)=>doc.text(h,[18,60,110,170][i],y));y+=7;doc.setTextColor(0,0,0);doc.setFont('helvetica','normal');
+  JENIS.forEach((j,idx)=>{const sj=data.simpanan.filter(s=>s.jenis===j),tot=sj.reduce((a,b)=>a+b.saldo,0);if(idx%2===0)doc.setFillColor(245,250,248);else doc.setFillColor(255,255,255);doc.rect(14,y-4,182,7,'F');doc.text(j,18,y);doc.text(''+sj.length,63,y,{align:'right'});doc.text(fmt(tot),168,y,{align:'right'});doc.text((totS>0?Math.round(tot/totS*100):0)+'%',190,y,{align:'right'});y+=7;});
+  doc.setFillColor(8,80,65);doc.rect(14,y-4,182,7,'F');doc.setTextColor(255,255,255);doc.setFont('helvetica','bold');doc.text('TOTAL',18,y);doc.text(''+data.simpanan.length,63,y,{align:'right'});doc.text(fmt(totS),168,y,{align:'right'});doc.text('100%',190,y,{align:'right'});
+  doc.setFontSize(7);doc.setTextColor(130,130,130);doc.text('Dicetak: '+new Date().toLocaleString('id-ID')+' · MAS Jatim',105,285,{align:'center'});
+  doc.save('Laporan-MAS-Jatim.pdf');
+}
+
+/* ── NOTIFIKASI ── */
+function getAdminNotifs(data){
+  const n=[],gN=id=>data.anggota.find(a=>a.id===id)?.nama?.split(' ')[0]||id;
+  const pend=data.pinjaman.filter(p=>p.status==='Menunggu');
+  if(pend.length>0)n.push({id:'np',type:'dang',icon:'ti-clock-exclamation',msg:`${pend.length} pengajuan pinjaman menunggu persetujuan`,sub:'Segera tinjau'});
+  const now=new Date(TODAY);
+  data.simpanan.filter(s=>s.jt).forEach(s=>{const diff=Math.round((new Date(s.jt)-now)/86400000);if(diff>=0&&diff<=14)n.push({id:'ns'+s.id,type:'warn',icon:'ti-calendar-exclamation',msg:`Simpanan ${s.jenis} ${gN(s.aid)} jatuh tempo ${diff} hari lagi`,sub:fmtD(s.jt)});});
+  n.push({id:'ni',type:'succ',icon:'ti-users',msg:`${data.anggota.filter(a=>a.status==='Aktif').length} anggota aktif`,sub:`Per ${fmtD(TODAY)}`});
+  return n;
+}
+function getMemberNotifs(data,aid){
+  const n=[];
+  data.pinjaman.filter(p=>p.aid===aid).forEach(p=>{
+    if(p.status==='Aktif')n.push({id:'mp'+p.id,type:'warn',icon:'ti-receipt',msg:`Cicilan ${p.id} menunggu pembayaran`,sub:fmt(p.cicilan)+'/bln'});
+    if(p.status==='Menunggu')n.push({id:'mw'+p.id,type:'info',icon:'ti-clock',msg:`Pengajuan ${p.id} menunggu persetujuan`,sub:fmt(p.jumlah)});
+    if(p.status==='Lunas')n.push({id:'ml'+p.id,type:'succ',icon:'ti-circle-check',msg:`Pinjaman ${p.id} lunas`,sub:'Selamat!'});
+  });
+  data.transaksi.filter(t=>t.aid===aid).slice(0,3).forEach(t=>n.push({id:'mt'+t.id,type:'succ',icon:t.tipe==='K'?'ti-arrow-down-circle':'ti-arrow-up-circle',msg:`${t.jenis} berhasil`,sub:(t.tipe==='K'?'+':'-')+fmt(t.nom)}));
+  return n;
+}
+
+/* ── SHARED COMPONENTS ── */
+function Modal({show,onClose,title,onSave,wide,children,saveLabel}){
+  if(!show)return null;
+  return <div className="modal-bg" onClick={e=>{if(e.target===e.currentTarget)onClose()}}>
+    <div className={`modal-box ${wide?'modal-wide':''}`}>
+      <div className="modal-head"><span>{title}</span><button className="btn btn-xs" onClick={onClose}><i className="ti ti-x"/></button></div>
+      <div className="modal-body">{children}</div>
+      {onSave&&<div className="modal-foot"><button className="btn btn-sm" onClick={onClose}>Batal</button><button className="btn btn-sm btn-p" onClick={onSave}>{saveLabel||'Simpan'}</button></div>}
+    </div>
+  </div>;
+}
+function Bdg({cls,children}){return <span className={`bdg ${cls}`}>{children}</span>}
+function BellMenu({notifs,readIds,onRead,dark}){
+  const [open,setOpen]=useState(false),ref=useRef();
+  const unread=notifs.filter(n=>!readIds.includes(n.id)).length;
+  const tm={dang:'ic-dang',warn:'ic-warn',succ:'ic-succ',info:'ic-info'};
+  useEffect(()=>{const h=e=>{if(ref.current&&!ref.current.contains(e.target))setOpen(false)};document.addEventListener('mousedown',h);return()=>document.removeEventListener('mousedown',h);},[]);
+  const s=dark?{padding:'4px 8px',background:'rgba(255,255,255,0.12)',borderColor:'rgba(255,255,255,0.2)',color:'#fff'}:{padding:'4px 8px'};
+  return <div className="bell-wrap" ref={ref}>
+    <button className="btn btn-xs" style={s} onClick={()=>{setOpen(o=>!o);if(open)onRead(notifs.map(n=>n.id))}}>
+      <i className="ti ti-bell" style={{fontSize:15}}/>
+      {unread>0&&<span style={{fontSize:10,fontWeight:700,background:'#A32D2D',color:'#fff',borderRadius:99,padding:'0 5px',marginLeft:2}}>{unread}</span>}
+    </button>
+    {open&&<div className="notif-panel">
+      <div className="np-head"><span>Notifikasi</span><button className="btn btn-xs" onClick={()=>onRead(notifs.map(n=>n.id))}><i className="ti ti-checks" style={{fontSize:12}}/> Baca semua</button></div>
+      {notifs.length===0?<div style={{padding:20,textAlign:'center',color:'#666',fontSize:11}}>Tidak ada notifikasi</div>
+        :notifs.map(n=><div key={n.id} className={`ni ${readIds.includes(n.id)?'':'unread'}`} onClick={()=>onRead([n.id])}>
+          <div className={`ni-ic ${tm[n.type]||'ic-info'}`}><i className={`ti ${n.icon}`}/></div>
+          <div style={{flex:1}}><div style={{fontSize:11,fontWeight:600}}>{n.msg}</div><div style={{fontSize:10,color:'#666',marginTop:1}}>{n.sub}</div></div>
+        </div>)
+      }
+    </div>}
+  </div>;
+}
+
+/* ── FIREBASE STATUS BADGE ── */
+function FbBadge({status}){
+  const conf={connected:{cls:'fb-ok',icon:'ti-cloud-check',lbl:'Real-time'},error:{cls:'fb-err',icon:'ti-cloud-off',lbl:'Offline'},connecting:{cls:'fb-sync',icon:'ti-cloud-upload',lbl:'Menghubungkan...'}};
+  const c=conf[status]||conf.error;
+  return <span className={`fb-status ${c.cls}`}><i className={`ti ${c.icon}`} style={{fontSize:11}}/>{c.lbl}</span>;
+}
+
+/* ── IMPORT MODAL ── */
+function ImportModal({show,onClose,data,upd}){
+  const [tab,setTab]=useState('anggota'),[step,setStep]=useState(1),[rows,setRows]=useState([]),[headers,setHeaders]=useState([]),[result,setResult]=useState(null),[drag,setDrag]=useState(false);
+  const fileRef=useRef(),allRows=useRef([]);
+  const reset=()=>{setStep(1);setRows([]);setHeaders([]);setResult(null);allRows.current=[]};
+  const handleClose=()=>{reset();onClose()};
+  const parseFile=file=>{
+    if(!file||!window.XLSX)return;
+    const r=new FileReader();
+    r.onload=e=>{try{const wb=window.XLSX.read(e.target.result,{type:'binary',cellDates:true}),ws=wb.Sheets[wb.SheetNames[0]],parsed=window.XLSX.utils.sheet_to_json(ws,{defval:'',raw:false});if(parsed.length===0){alert('File kosong');return;}setHeaders(Object.keys(parsed[0]));setRows(parsed.slice(0,5));allRows.current=parsed;setStep(2);}catch(err){alert('Error: '+err.message);}};
+    r.readAsBinaryString(file);
+  };
+  const g=(r,...ks)=>ks.map(k=>r[k]||r[k.toLowerCase()]||r[k.toUpperCase()]||'').find(v=>v!=='')||'';
+  const doImport=()=>{
+    const rows=allRows.current;if(!rows.length)return;
+    let count=0,errs=[];
+    try{
+      if(tab==='anggota'){const imp=rows.map((r,i)=>{const nama=g(r,'Nama','name');if(!nama){errs.push(`Baris ${i+2}: Nama kosong`);return null;}return{id:newId('A',[...data.anggota,...Array(i).fill({})]),nama,nik:String(g(r,'NIK','nik')),phone:String(g(r,'Telepon','telepon','HP')),alamat:g(r,'Alamat','alamat'),bergabung:g(r,'Bergabung','bergabung')||TODAY,status:g(r,'Status','status')||'Aktif'};}).filter(Boolean);upd('anggota',[...data.anggota,...imp]);count=imp.length;}
+      else if(tab==='simpanan'){const imp=rows.map((r,i)=>{const aid=g(r,'ID Anggota','aid','id_anggota');if(!aid){errs.push(`Baris ${i+2}: ID Anggota kosong`);return null;}return{id:newId('S',[...data.simpanan,...Array(i).fill({})]),aid,jenis:g(r,'Jenis','jenis')||'Wadiah',saldo:parseFloat(String(g(r,'Saldo','saldo')).replace(/[^0-9.]/g,''))||0,bh:parseFloat(g(r,'Bagi Hasil %','bh'))||0,tgl:g(r,'Tgl Buka','tgl_buka','tgl')||TODAY,jt:g(r,'Jatuh Tempo','jt')||null};}).filter(Boolean);upd('simpanan',[...data.simpanan,...imp]);count=imp.length;}
+      else if(tab==='pinjaman'){const imp=rows.map((r,i)=>{const aid=g(r,'ID Anggota','aid');const j=parseFloat(String(g(r,'Jumlah','jumlah')).replace(/[^0-9.]/g,''))||0;if(!aid||!j){errs.push(`Baris ${i+2}: data tidak lengkap`);return null;}const t=parseInt(g(r,'Tenor (bulan)','tenor'))||12;return{id:newId('P',[...data.pinjaman,...Array(i).fill({})]),aid,jumlah:j,sisa:j,cicilan:Math.round(j/t),bunga:parseFloat(g(r,'Bunga %/bln','bunga'))||1.5,tenor:t,ke:0,tgl:TODAY,status:'Menunggu'};}).filter(Boolean);upd('pinjaman',[...data.pinjaman,...imp]);count=imp.length;}
+      else if(tab==='transaksi'){const imp=rows.map((r,i)=>{const aid=g(r,'ID Anggota','aid');const nom=parseFloat(String(g(r,'Nominal','nominal')).replace(/[^0-9.]/g,''))||0;if(!aid||!nom){errs.push(`Baris ${i+2}: data tidak lengkap`);return null;}return{id:newId('T',[...data.transaksi,...Array(i).fill({})]),tgl:g(r,'Tanggal','tgl')||TODAY,aid,jenis:g(r,'Jenis','jenis')||'Lainnya',ket:g(r,'Keterangan','ket'),nom,tipe:g(r,'Tipe (K/D)','tipe').toUpperCase()==='D'?'D':'K'};}).filter(Boolean);upd('transaksi',[...data.transaksi,...imp]);count=imp.length;}
+      setResult({ok:true,count,errs});setStep(3);
+    }catch(err){setResult({ok:false,msg:err.message});setStep(3);}
+  };
+  const tabs=[{id:'anggota',lbl:'Anggota',icon:'ti-users'},{id:'simpanan',lbl:'Simpanan',icon:'ti-piggy-bank'},{id:'pinjaman',lbl:'Pinjaman',icon:'ti-receipt'},{id:'transaksi',lbl:'Transaksi',icon:'ti-arrows-exchange'}];
+  return <Modal show={show} onClose={handleClose} title="Import Data dari Excel / CSV" wide={true} onSave={step===2?doImport:null} saveLabel={`Import ${allRows.current.length} baris`}>
+    <div className="step-indicator">
+      {['Upload','Preview','Selesai'].map((s,i)=><React.Fragment key={i}>
+        <div className={`step-dot ${step>i+1?'done':step===i+1?'active':'pending'}`}>{step>i+1?<i className="ti ti-check" style={{fontSize:11}}/>:i+1}</div>
+        <span style={{fontSize:11,color:step===i+1?'var(--t)':'#888',fontWeight:step===i+1?600:400}}>{s}</span>
+        {i<2&&<div className={`step-line ${step>i+1?'done':''}`}/>}
+      </React.Fragment>)}
+    </div>
+    {step===1&&<>
+      <div className="import-tabs">{tabs.map(t=><button key={t.id} className={`it ${tab===t.id?'on':''}`} onClick={()=>{setTab(t.id);reset();}}><i className={`ti ${t.icon}`} style={{marginRight:4,fontSize:12}}/>{t.lbl}</button>)}</div>
+      <div style={{background:'#f7f7f3',borderRadius:8,padding:'10px 12px',marginBottom:10,display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+        <div><div style={{fontSize:12,fontWeight:600}}>Belum punya template?</div><div style={{fontSize:11,color:'#666',marginTop:2}}>Download format Excel yang benar</div></div>
+        <button className="btn btn-sm btn-grn" onClick={()=>downloadTemplate(tab)}><i className="ti ti-download"/> Template</button>
+      </div>
+      <div className={`drop-zone ${drag?'drag-over':''}`} onClick={()=>fileRef.current?.click()} onDragOver={e=>{e.preventDefault();setDrag(true)}} onDragLeave={()=>setDrag(false)} onDrop={e=>{e.preventDefault();setDrag(false);parseFile(e.dataTransfer.files[0])}}>
+        <i className="ti ti-file-spreadsheet" style={{fontSize:36,color:'var(--t)',display:'block',marginBottom:8}}/>
+        <div style={{fontSize:13,fontWeight:600,marginBottom:4}}>Klik atau drag & drop file</div>
+        <div style={{fontSize:11,color:'#666'}}>Format: .xlsx, .xls, .csv</div>
+        <input ref={fileRef} type="file" accept=".xlsx,.xls,.csv" style={{display:'none'}} onChange={e=>parseFile(e.target.files[0])}/>
+      </div>
+      <div style={{marginTop:10,padding:'10px 12px',background:'#f0f9f5',borderRadius:8,border:'1px solid var(--brd)'}}>
+        <div style={{fontSize:11,fontWeight:600,marginBottom:5,color:'var(--t)'}}>Kolom yang dibutuhkan untuk {tab}:</div>
+        <div style={{display:'flex',flexWrap:'wrap',gap:4}}>{TEMPLATES[tab].headers.map(h=><span key={h} style={{fontSize:10,background:'#fff',border:'1px solid var(--brd)',padding:'2px 8px',borderRadius:4}}>{h}</span>)}</div>
+      </div>
+    </>}
+    {step===2&&<>
+      <div style={{display:'flex',justifyContent:'space-between',marginBottom:8}}>
+        <div><div style={{fontSize:12,fontWeight:600}}>{allRows.current.length} baris ditemukan</div><div style={{fontSize:11,color:'#666'}}>Preview 5 baris pertama</div></div>
+        <button className="btn btn-xs" onClick={reset}><i className="ti ti-refresh"/> Ganti File</button>
+      </div>
+      <div className="tw" style={{maxHeight:220,overflowY:'auto'}}>
+        <table><thead><tr>{headers.map(h=><th key={h}>{h}</th>)}</tr></thead>
+          <tbody>{rows.map((r,i)=><tr key={i}>{headers.map(h=><td key={h}>{String(r[h]).substring(0,25)}</td>)}</tr>)}</tbody>
+        </table>
+      </div>
+      <div className="alert-box alert-teal" style={{marginTop:8}}><i className="ti ti-info-circle" style={{marginRight:4}}/>Data baru akan <strong>ditambahkan</strong> ke data yang sudah ada.</div>
+    </>}
+    {step===3&&result&&<>
+      <div className={`result-box ${result.ok?'result-succ':'result-err'}`}>
+        <i className={`ti ${result.ok?'ti-circle-check':'ti-circle-x'}`} style={{fontSize:36,display:'block',marginBottom:8}}/>
+        <div style={{fontSize:14,fontWeight:700}}>{result.ok?`Berhasil! ${result.count} data diimport`:'Import Gagal'}</div>
+        {!result.ok&&<div style={{fontSize:11,marginTop:4}}>{result.msg}</div>}
+      </div>
+      {result.errs?.length>0&&<div style={{marginTop:10,padding:10,background:'#fff8f0',borderRadius:8,border:'1px solid #F0B8B8'}}>
+        <div style={{fontSize:11,fontWeight:600,color:'#A32D2D',marginBottom:4}}>Baris dilewati ({result.errs.length}):</div>
+        {result.errs.slice(0,5).map((e,i)=><div key={i} style={{fontSize:10,color:'#A32D2D'}}>• {e}</div>)}
+      </div>}
+      <div style={{display:'flex',gap:8,marginTop:12}}>
+        <button className="btn btn-p btn-sm" style={{flex:1,justifyContent:'center'}} onClick={()=>{reset();setTab('anggota');}}>Import Lagi</button>
+        <button className="btn btn-sm" style={{flex:1,justifyContent:'center'}} onClick={handleClose}>Selesai</button>
+      </div>
+    </>}
+  </Modal>;
+}
+
+/* ── FIREBASE SETUP WIZARD ── */
+function FirebaseSetup({onConnect,onSkip}){
+  const [step,setStep]=useState(0);
+  const [configText,setConfigText]=useState('');
+  const [error,setError]=useState('');
+  const [connecting,setConnecting]=useState(false);
+  const DB_RULES=`{\n  "rules": {\n    ".read": true,\n    ".write": true\n  }\n}`;
+  const copyToClipboard=text=>{navigator.clipboard?.writeText(text).then(()=>alert('Disalin!'));};
+  const tryConnect=()=>{
+    setError('');setConnecting(true);
+    try{
+      let cfg;
+      const cleaned=configText.trim().replace(/^const\s+firebaseConfig\s*=\s*/,'').replace(/;?\s*$/,'');
+      try{cfg=JSON.parse(cleaned);}catch{try{cfg=eval('('+cleaned+')');}catch{throw new Error('Format config tidak valid. Pastikan berbentuk JSON');}}
+      if(!cfg.apiKey||cfg.apiKey==='YOUR_API_KEY')throw new Error('apiKey tidak ditemukan');
+      if(!cfg.databaseURL)throw new Error('databaseURL tidak ditemukan. Pastikan Realtime Database sudah diaktifkan');
+      localStorage.setItem('mas_fb_config',JSON.stringify(cfg));
+      onConnect(cfg);
+    }catch(e){setError(e.message);setConnecting(false);}
+  };
+  const steps=[
+    {lbl:'Buat Project',icon:'ti-brand-firebase'},
+    {lbl:'Aktifkan DB',icon:'ti-database'},
+    {lbl:'Database Rules',icon:'ti-shield'},
+    {lbl:'Paste Config',icon:'ti-code'},
+  ];
+  return <div className="center-wrap">
+    <div className="setup-card">
+      <div className="setup-header">
+        <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:6}}>
+          <div style={{fontSize:28}}>🔥</div>
+          <div>
+            <div style={{fontSize:16,fontWeight:700}}>Hubungkan Firebase</div>
+            <div style={{fontSize:11,color:'rgba(255,255,255,0.7)'}}>Untuk sinkronisasi data real-time antar perangkat</div>
+          </div>
+        </div>
+        <div className="step-wrap">
+          {steps.map((s,i)=><div key={i} className={`sw ${step===i?'on':step>i?'done':''}`} onClick={()=>i<step&&setStep(i)}>
+            <div className="sw-num">{step>i?<i className="ti ti-check" style={{fontSize:9}}/>:i+1}</div>
+            <div style={{marginTop:2}}>{s.lbl}</div>
+          </div>)}
+        </div>
+      </div>
+      <div className="setup-body">
+        {step===0&&<div>
+          <div style={{fontSize:13,fontWeight:600,marginBottom:12}}>Buat Firebase Project</div>
+          <div className="guide-step"><div style={{fontWeight:600,marginBottom:4}}>1. Buka Firebase Console</div><div style={{fontSize:11,color:'#666'}}>Buka <strong>console.firebase.google.com</strong> dan login dengan Google</div></div>
+          <div className="guide-step"><div style={{fontWeight:600,marginBottom:4}}>2. Buat Project Baru</div><div style={{fontSize:11,color:'#666'}}>Klik <strong>"Add project"</strong> → Beri nama project (contoh: <em>koperasi-mas</em>) → Klik Continue → Disable Google Analytics → Klik "Create project"</div></div>
+          <div className="guide-step"><div style={{fontWeight:600,marginBottom:4}}>3. Daftarkan Web App</div><div style={{fontSize:11,color:'#666'}}>Di halaman project → Klik ikon <strong>&lt;/&gt;</strong> (Web) → Beri nama app → Klik "Register app"</div></div>
+          <button className="btn btn-p btn-sm" style={{marginTop:4}} onClick={()=>window.open('https://console.firebase.google.com','_blank')}><i className="ti ti-external-link"/> Buka Firebase Console</button>
+          <div style={{display:'flex',justifyContent:'flex-end',marginTop:14}}><button className="btn btn-p btn-sm" onClick={()=>setStep(1)}>Lanjut <i className="ti ti-arrow-right"/></button></div>
+        </div>}
+        {step===1&&<div>
+          <div style={{fontSize:13,fontWeight:600,marginBottom:12}}>Aktifkan Realtime Database</div>
+          <div className="guide-step"><div style={{fontWeight:600,marginBottom:4}}>1. Buka Realtime Database</div><div style={{fontSize:11,color:'#666'}}>Di panel kiri Firebase Console → <strong>Build</strong> → <strong>Realtime Database</strong></div></div>
+          <div className="guide-step"><div style={{fontWeight:600,marginBottom:4}}>2. Create Database</div><div style={{fontSize:11,color:'#666'}}>Klik <strong>"Create Database"</strong> → Pilih lokasi server (pilih <em>Singapore</em> untuk Indonesia) → Klik Next</div></div>
+          <div className="guide-step"><div style={{fontWeight:600,marginBottom:4}}>3. Pilih Mode</div><div style={{fontSize:11,color:'#666'}}>Pilih <strong>"Start in test mode"</strong> → Klik Enable. (Kita akan atur rules di langkah berikutnya)</div></div>
+          <div style={{display:'flex',justifyContent:'space-between',marginTop:14}}>
+            <button className="btn btn-sm" onClick={()=>setStep(0)}><i className="ti ti-arrow-left"/> Kembali</button>
+            <button className="btn btn-p btn-sm" onClick={()=>setStep(2)}>Lanjut <i className="ti ti-arrow-right"/></button>
+          </div>
+        </div>}
+        {step===2&&<div>
+          <div style={{fontSize:13,fontWeight:600,marginBottom:12}}>Set Database Rules</div>
+          <div className="guide-step"><div style={{fontWeight:600,marginBottom:4}}>1. Buka tab "Rules"</div><div style={{fontSize:11,color:'#666'}}>Di halaman Realtime Database → Klik tab <strong>"Rules"</strong></div></div>
+          <div className="guide-step">
+            <div style={{fontWeight:600,marginBottom:4}}>2. Salin rules berikut dan paste ke editor:</div>
+            <div className="code-box">{DB_RULES}<button className="copy-btn" onClick={()=>copyToClipboard(DB_RULES)}>Salin</button></div>
+          </div>
+          <div className="guide-step"><div style={{fontWeight:600,marginBottom:4}}>3. Klik "Publish"</div><div style={{fontSize:11,color:'#666'}}>Klik tombol <strong>Publish</strong> untuk menyimpan rules</div></div>
+          <div style={{background:'#FEF3E2',borderRadius:8,padding:'10px 12px',fontSize:11,color:'#92400E',marginTop:8}}><i className="ti ti-info-circle" style={{marginRight:4}}/>Rules ini membuka akses baca/tulis secara publik. Cocok untuk demo/development. Untuk produksi, tambahkan autentikasi.</div>
+          <div style={{display:'flex',justifyContent:'space-between',marginTop:14}}>
+            <button className="btn btn-sm" onClick={()=>setStep(1)}><i className="ti ti-arrow-left"/> Kembali</button>
+            <button className="btn btn-p btn-sm" onClick={()=>setStep(3)}>Lanjut <i className="ti ti-arrow-right"/></button>
+          </div>
+        </div>}
+        {step===3&&<div>
+          <div style={{fontSize:13,fontWeight:600,marginBottom:12}}>Paste Firebase Config</div>
+          <div className="guide-step"><div style={{fontWeight:600,marginBottom:4}}>Cara mendapatkan config:</div><div style={{fontSize:11,color:'#666'}}>Firebase Console → Project Settings (⚙️) → Your apps → Web app → <strong>SDK setup and configuration</strong> → Pilih "Config" → Salin</div></div>
+          <div className="fg">
+            <label>Paste Firebase Config (JSON atau format firebaseConfig = ...)</label>
+            <textarea className="ta" rows={7} value={configText} onChange={e=>{setConfigText(e.target.value);setError('');}} placeholder={`{\n  "apiKey": "AIzaSy...",\n  "authDomain": "project.firebaseapp.com",\n  "databaseURL": "https://project-default-rtdb.asia-southeast1.firebasedatabase.app",\n  "projectId": "project-id",\n  "storageBucket": "project.appspot.com",\n  "messagingSenderId": "123456789",\n  "appId": "1:123456789:web:..."\n}`}/>
+          </div>
+          {error&&<div style={{fontSize:11,color:'#A32D2D',marginBottom:8,padding:'8px 10px',background:'var(--rl)',borderRadius:6}}><i className="ti ti-alert-circle" style={{marginRight:4}}/>{error}</div>}
+          <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginTop:4}}>
+            <div style={{display:'flex',gap:6}}>
+              <button className="btn btn-sm" onClick={()=>setStep(2)}><i className="ti ti-arrow-left"/> Kembali</button>
+              <button className="btn btn-sm" style={{color:'#666'}} onClick={onSkip}>Lewati (gunakan lokal)</button>
+            </div>
+            <button className="btn btn-p btn-sm" disabled={!configText.trim()||connecting} onClick={tryConnect}>
+              {connecting?<><i className="ti ti-loader-2" style={{animation:'spin 1s linear infinite'}}/> Menghubungkan...</>:<><i className="ti ti-plug-connected"/> Hubungkan</>}
+            </button>
+          </div>
+        </div>}
+      </div>
+    </div>
+  </div>;
+}
+
+/* ── PWA INSTALL ── */
+function InstallBanner(){
+  const [dp,setDp]=useState(null),[show,setShow]=useState(false);
+  useEffect(()=>{const h=e=>{e.preventDefault();setDp(e);setTimeout(()=>setShow(true),3000)};window.addEventListener('beforeinstallprompt',h);return()=>window.removeEventListener('beforeinstallprompt',h);},[]);
+  if(!show)return null;
+  return <div className="install-banner">
+    <div style={{flex:1}}><div style={{fontSize:12,fontWeight:700}}>Install MAS Jatim</div><div style={{fontSize:10,color:'rgba(255,255,255,0.7)',marginTop:2}}>Buka seperti aplikasi native</div></div>
+    <button className="btn btn-xs" style={{background:'#fff',color:'var(--t3)',border:'none'}} onClick={async()=>{dp?.prompt();setShow(false)}}>Install</button>
+    <button className="btn btn-xs" style={{color:'rgba(255,255,255,0.7)',border:'none',background:'transparent'}} onClick={()=>setShow(false)}>✕</button>
+  </div>;
+}
+
+/* ══════════════ ADMIN APP ══════════════ */
+function AdminApp({data,upd,onLogout,fbStatus,onOpenSetup}){
+  const [pg,setPg]=useState('dashboard');
+  const [srch,setSrch]=useState('');
+  const [mA,setMA]=useState(null);const [fA,setFA]=useState({});
+  const [mS,setMS]=useState(false);const [fS,setFS]=useState({aid:'',jenis:'Wadiah',saldo:'',bh:0,tgl:TODAY,jt:''});
+  const [mP,setMP]=useState(false);const [fP,setFP]=useState({aid:'',jumlah:'',bunga:1.5,tenor:12});
+  const [mT,setMT]=useState(false);const [fT,setFT]=useState({aid:'',jenis:'Setor Simpanan',ket:'',nom:'',tipe:'K'});
+  const [fJ,setFJ]=useState('Semua'),[readIds,setReadIds]=useState([]),[showImport,setShowImport]=useState(false);
+  const {anggota,simpanan,pinjaman,transaksi}=data;
+  const gN=id=>anggota.find(a=>a.id===id)?.nama||id;
+  const totS=simpanan.reduce((s,x)=>s+x.saldo,0),totP=pinjaman.filter(p=>p.status==='Aktif').reduce((s,x)=>s+x.sisa,0);
+  const aktif=anggota.filter(a=>a.status==='Aktif').length,pAktif=pinjaman.filter(p=>p.status==='Aktif').length;
+  const notifs=getAdminNotifs(data);
+  const defAid=anggota.find(a=>a.status==='Aktif')?.id||'';
+
+  const saveA=()=>{if(!fA.nama||!fA.nik)return;if(mA==='new')upd('anggota',[...anggota,{...fA,id:newId('A',anggota),bergabung:TODAY}]);else upd('anggota',anggota.map(a=>a.id===mA?{...a,...fA}:a));setMA(null)};
+  const saveS=()=>{if(!fS.saldo)return;upd('simpanan',[...simpanan,{...fS,id:newId('S',simpanan),saldo:+fS.saldo,bh:+fS.bh,jt:fS.jt||null}]);upd('transaksi',[{id:newId('T',transaksi),tgl:TODAY,aid:fS.aid,jenis:'Setor Simpanan',ket:'Buka '+fS.jenis,nom:+fS.saldo,tipe:'K'},...transaksi]);setMS(false)};
+  const saveP=()=>{if(!fP.jumlah)return;const j=+fP.jumlah,t=+fP.tenor;upd('pinjaman',[...pinjaman,{id:newId('P',pinjaman),aid:fP.aid,jumlah:j,sisa:j,cicilan:Math.round(j/t),bunga:+fP.bunga,tenor:t,ke:0,tgl:TODAY,status:'Menunggu'}]);setMP(false)};
+  const approveP=(p,ok)=>{upd('pinjaman',pinjaman.map(x=>x.id===p.id?{...x,status:ok?'Aktif':'Ditolak',cicilan:ok?Math.round(p.jumlah/p.tenor):0}:x));if(ok)upd('transaksi',[{id:newId('T',transaksi),tgl:TODAY,aid:p.aid,jenis:'Pencairan',ket:'Cair '+p.id,nom:p.jumlah,tipe:'D'},...transaksi])};
+  const bayarP=p=>{const sisa=Math.max(0,p.sisa-p.cicilan);upd('pinjaman',pinjaman.map(x=>x.id===p.id?{...x,sisa,ke:x.ke+1,status:sisa===0?'Lunas':'Aktif'}:x));upd('transaksi',[{id:newId('T',transaksi),tgl:TODAY,aid:p.aid,jenis:'Angsuran',ket:'Cicilan '+p.id,nom:p.cicilan,tipe:'K'},...transaksi])};
+  const saveT=()=>{if(!fT.nom||!fT.ket)return;upd('transaksi',[{...fT,id:newId('T',transaksi),tgl:TODAY,nom:+fT.nom},...transaksi]);setMT(false)};
+
+  const pages=[{id:'dashboard',icon:'ti-layout-dashboard',lbl:'Dashboard'},{id:'anggota',icon:'ti-users',lbl:'Anggota'},{id:'simpanan',icon:'ti-piggy-bank',lbl:'Simpanan'},{id:'pinjaman',icon:'ti-receipt',lbl:'Pinjaman'},{id:'transaksi',icon:'ti-arrows-exchange',lbl:'Transaksi'},{id:'laporan',icon:'ti-chart-bar',lbl:'Laporan'}];
+  const pt={dashboard:'Dashboard',anggota:'Data Anggota',simpanan:'Manajemen Simpanan',pinjaman:'Manajemen Pinjaman',transaksi:'Transaksi',laporan:'Laporan & Ekspor'};
+
+  function Dashboard(){
+    const pend=pinjaman.filter(p=>p.status==='Menunggu');
+    return <div>
+      <div className="grid-4">
+        {[['Anggota',anggota.length,aktif+' aktif'],['Total Simpanan',fmt(totS),simpanan.length+' rekening'],['Pinjaman Berjalan',fmt(totP),pAktif+' aktif'],['Menunggu Approval',pend.length,pend.length>0?'Perlu disetujui':'Semua clear']].map(([l,v,s],i)=>(
+          <div key={i} className="stat-box"><div className="stat-lbl">{l}</div><div className="stat-val" style={{fontSize:i<2?undefined:12,color:i===3&&pend.length>0?'#A32D2D':undefined}}>{v}</div><span style={{fontSize:10,color:i===3&&pend.length>0?'#A32D2D':'#666'}}>{s}</span></div>
+        ))}
+      </div>
+      <div className="grid-2">
+        <div className="card" style={{margin:0}}>
+          <div className="sec-head"><span style={{fontSize:12,fontWeight:600}}>Transaksi Terbaru</span></div>
+          {transaksi.slice(0,5).map(t=><div key={t.id} style={{display:'flex',justifyContent:'space-between',padding:'5px 0',borderBottom:'1px solid var(--brd)',fontSize:11}}>
+            <div><div style={{fontWeight:600}}>{t.jenis}</div><div style={{fontSize:10,color:'#666'}}>{gN(t.aid)} · {fmtD(t.tgl)}</div></div>
+            <div style={{fontWeight:600,color:t.tipe==='K'?'#3B6D11':'#A32D2D'}}>{t.tipe==='K'?'+':'-'}{fmt(t.nom)}</div>
+          </div>)}
+        </div>
+        <div className="card" style={{margin:0}}>
+          <div className="sec-head"><span style={{fontSize:12,fontWeight:600}}>Sebaran Simpanan</span></div>
+          {JENIS.map((j,i)=>{const tot=simpanan.filter(s=>s.jenis===j).reduce((a,b)=>a+b.saldo,0),p=totS>0?Math.round(tot/totS*100):0;return <div key={j} style={{marginBottom:7}}><div style={{display:'flex',justifyContent:'space-between',fontSize:10,marginBottom:2}}><span>{j}</span><span style={{fontWeight:600}}>{fmt(tot)}</span></div><div className="pbar"><div className="pfill" style={{width:p+'%',background:DOTS[i]}}/></div></div>})}
+        </div>
+      </div>
+      {pend.length>0&&<div className="card" style={{marginTop:0}}>
+        <div className="sec-head"><span style={{fontSize:12,fontWeight:600,color:'#A32D2D'}}>Menunggu Persetujuan</span></div>
+        <div className="tw"><table><thead><tr>{['ID','Anggota','Jumlah','Tenor','Aksi'].map(h=><th key={h}>{h}</th>)}</tr></thead>
+          <tbody>{pend.map(p=><tr key={p.id}><td><span className="tag">{p.id}</span></td><td>{gN(p.aid)}</td><td>{fmt(p.jumlah)}</td><td>{p.tenor} bln</td><td><div style={{display:'flex',gap:4}}><button className="btn btn-xs btn-p" onClick={()=>approveP(p,true)}>Setujui</button><button className="btn btn-xs btn-red" onClick={()=>approveP(p,false)}>Tolak</button></div></td></tr>)}
+          </tbody></table></div>
+      </div>}
+    </div>;
+  }
+  function PgA(){const fl=anggota.filter(a=>a.nama.toLowerCase().includes(srch.toLowerCase())||a.id.includes(srch));return <div>
+    <div className="sec-head"><div style={{position:'relative',flex:1,maxWidth:240}}><i className="ti ti-search" style={{position:'absolute',left:8,top:'50%',transform:'translateY(-50%)',color:'#888',fontSize:14}}/><input className="inp" style={{paddingLeft:28}} placeholder="Cari..." value={srch} onChange={e=>setSrch(e.target.value)}/></div>
+      <div style={{display:'flex',gap:6}}><button className="btn btn-sm btn-pur" onClick={()=>setShowImport(true)}><i className="ti ti-file-import"/> Import</button><button className="btn btn-sm btn-p" onClick={()=>{setFA({nama:'',nik:'',phone:'',alamat:'',status:'Aktif'});setMA('new');}}><i className="ti ti-plus"/> Tambah</button></div></div>
+    <div className="card" style={{margin:0}}><div className="tw"><table><thead><tr>{['ID','Nama','Telepon','Bergabung','Status',''].map(h=><th key={h}>{h}</th>)}</tr></thead>
+      <tbody>{fl.map(a=><tr key={a.id}><td><span className="tag">{a.id}</span></td><td><div style={{fontWeight:600}}>{a.nama}</div><div style={{fontSize:10,color:'#666'}}>{a.nik}</div></td><td>{a.phone}</td><td>{fmtD(a.bergabung)}</td><td><Bdg cls={a.status==='Aktif'?'bg':'br'}>{a.status}</Bdg></td><td><button className="btn btn-xs" onClick={()=>{setFA({...a});setMA(a.id);}}><i className="ti ti-edit"/></button></td></tr>)}
+      </tbody></table></div></div>
+  </div>;}
+  function PgS(){const fl=fJ==='Semua'?simpanan:simpanan.filter(s=>s.jenis===fJ);return <div>
+    <div className="sec-head" style={{flexWrap:'wrap',gap:6}}><div style={{display:'flex',gap:4,flexWrap:'wrap'}}>{['Semua',...JENIS].map(j=><button key={j} className={`btn btn-xs ${fJ===j?'btn-p':''}`} onClick={()=>setFJ(j)}>{j}</button>)}</div>
+      <div style={{display:'flex',gap:6}}><button className="btn btn-sm btn-pur" onClick={()=>setShowImport(true)}><i className="ti ti-file-import"/> Import</button><button className="btn btn-sm btn-p" onClick={()=>{setFS({aid:defAid,jenis:'Wadiah',saldo:'',bh:0,tgl:TODAY,jt:''});setMS(true);}}><i className="ti ti-plus"/> Buka Rekening</button></div></div>
+    <div className="card" style={{margin:0}}><div className="tw"><table><thead><tr>{['ID','Anggota','Jenis','Saldo','BH%','Tgl Buka','Jatuh Tempo'].map(h=><th key={h}>{h}</th>)}</tr></thead>
+      <tbody>{fl.map(s=><tr key={s.id}><td><span className="tag">{s.id}</span></td><td>{gN(s.aid)}</td><td><Bdg cls={JB[s.jenis]||'bt'}>{s.jenis}</Bdg></td><td><strong>{fmt(s.saldo)}</strong></td><td>{s.bh>0?s.bh+'%':'—'}</td><td>{fmtD(s.tgl)}</td><td>{s.jt?fmtD(s.jt):'—'}</td></tr>)}
+      </tbody></table></div></div>
+  </div>;}
+  function PgP(){return <div>
+    <div className="sec-head"><div style={{display:'flex',gap:8}}><div className="stat-box" style={{padding:'6px 10px'}}><div className="stat-lbl">Outstanding</div><div className="stat-val" style={{fontSize:12}}>{fmt(totP)}</div></div><div className="stat-box" style={{padding:'6px 10px'}}><div className="stat-lbl">Aktif</div><div className="stat-val">{pAktif}</div></div></div>
+      <div style={{display:'flex',gap:6}}><button className="btn btn-sm btn-pur" onClick={()=>setShowImport(true)}><i className="ti ti-file-import"/> Import</button><button className="btn btn-sm btn-p" onClick={()=>{setFP({aid:defAid,jumlah:'',bunga:1.5,tenor:12});setMP(true);}}><i className="ti ti-plus"/> Ajukan</button></div></div>
+    <div className="card" style={{margin:0}}><div className="tw"><table><thead><tr>{['ID','Anggota','Jumlah','Sisa','Cicilan/Bln','Prog','Status','Aksi'].map(h=><th key={h}>{h}</th>)}</tr></thead>
+      <tbody>{pinjaman.map(p=>{const pct=p.jumlah>0?Math.round((1-p.sisa/p.jumlah)*100):100;return<tr key={p.id}><td><span className="tag">{p.id}</span></td><td>{gN(p.aid)}</td><td>{fmt(p.jumlah)}</td><td>{fmt(p.sisa)}</td><td>{fmt(p.cicilan)}</td><td><div className="pbar" style={{width:70}}><div className="pfill" style={{width:pct+'%'}}/></div><span style={{fontSize:9,color:'#666'}}>{pct}%</span></td><td><Bdg cls={p.status==='Aktif'?'bg':p.status==='Lunas'?'bb':p.status==='Menunggu'?'ba':'br'}>{p.status}</Bdg></td>
+        <td>{p.status==='Aktif'&&<button className="btn btn-xs btn-p" onClick={()=>bayarP(p)}>Bayar</button>}{p.status==='Menunggu'&&<div style={{display:'flex',gap:3}}><button className="btn btn-xs btn-p" onClick={()=>approveP(p,true)}>OK</button><button className="btn btn-xs btn-red" onClick={()=>approveP(p,false)}>✕</button></div>}{(p.status==='Lunas'||p.status==='Ditolak')&&<span style={{fontSize:10,color:'#666'}}>{p.status}</span>}</td>
+      </tr>})}</tbody></table></div></div>
+  </div>;}
+  function PgT(){return <div>
+    <div className="sec-head"><span style={{fontSize:13,fontWeight:600}}>Semua Transaksi</span><div style={{display:'flex',gap:6}}><button className="btn btn-sm btn-pur" onClick={()=>setShowImport(true)}><i className="ti ti-file-import"/> Import</button><button className="btn btn-sm btn-p" onClick={()=>{setFT({aid:defAid,jenis:'Setor Simpanan',ket:'',nom:'',tipe:'K'});setMT(true);}}><i className="ti ti-plus"/> Tambah</button></div></div>
+    <div className="card" style={{margin:0}}><div className="tw"><table><thead><tr>{['ID','Tgl','Anggota','Jenis','Keterangan','Nominal','Tipe'].map(h=><th key={h}>{h}</th>)}</tr></thead>
+      <tbody>{transaksi.map(t=><tr key={t.id}><td><span className="tag">{t.id}</span></td><td>{fmtD(t.tgl)}</td><td>{gN(t.aid)}</td><td>{t.jenis}</td><td style={{color:'#666'}}>{t.ket}</td><td><strong style={{color:t.tipe==='K'?'#3B6D11':'#A32D2D'}}>{t.tipe==='K'?'+':'-'}{fmt(t.nom)}</strong></td><td><Bdg cls={t.tipe==='K'?'bg':'br'}>{t.tipe==='K'?'Kredit':'Debet'}</Bdg></td></tr>)}
+      </tbody></table></div></div>
+  </div>;}
+  function PgL(){
+    const totK=transaksi.filter(t=>t.tipe==='K').reduce((s,t)=>s+t.nom,0),totD=transaksi.filter(t=>t.tipe==='D').reduce((s,t)=>s+t.nom,0);
+    const byJ=JENIS.map(j=>({j,n:simpanan.filter(s=>s.jenis===j).length,t:simpanan.filter(s=>s.jenis===j).reduce((a,b)=>a+b.saldo,0)}));
+    return <div>
+      <div className="export-bar">
+        <span style={{fontSize:12,fontWeight:600}}>Ekspor:</span>
+        <button className="btn btn-sm btn-pur" onClick={()=>setShowImport(true)}><i className="ti ti-file-import"/> Import Data</button>
+        <button className="btn btn-sm btn-grn" onClick={()=>exportExcel(data)}><i className="ti ti-table-export"/> Excel</button>
+        <button className="btn btn-sm btn-blu" onClick={()=>exportPDF(data)}><i className="ti ti-file-type-pdf"/> PDF</button>
+        {fbStatus!=='connected'&&<button className="btn btn-sm btn-ora" onClick={onOpenSetup}><i className="ti ti-brand-firebase"/> Setup Firebase</button>}
+      </div>
+      <div className="grid-2">
+        <div className="card" style={{margin:0}}><div style={{fontSize:12,fontWeight:600,marginBottom:8}}>Ringkasan Anggota</div>{[['Total Anggota',anggota.length],['Aktif',aktif,'#3B6D11'],['Non-Aktif',anggota.length-aktif,'#A32D2D'],['Rekening Simpanan',simpanan.length],['Pinjaman Aktif',pAktif]].map(([l,v,c],i)=><div key={i} className="ir"><span className="ir-lbl">{l}</span><strong style={{color:c}}>{v}</strong></div>)}</div>
+        <div className="card" style={{margin:0}}><div style={{fontSize:12,fontWeight:600,marginBottom:8}}>Ringkasan Keuangan</div>{[['Dana Simpanan',fmt(totS),'var(--t)'],['Outstanding Pinjaman',fmt(totP),'#A32D2D'],['Total Setoran',fmt(totK),'#3B6D11'],['Total Pengeluaran',fmt(totD),'#A32D2D'],['Selisih Bersih',fmt(totK-totD)]].map(([l,v,c],i)=><div key={i} className="ir"><span className="ir-lbl">{l}</span><strong style={{color:c}}>{v}</strong></div>)}</div>
+      </div>
+      <div className="card" style={{margin:0}}><div style={{fontSize:12,fontWeight:600,marginBottom:8}}>Rekap Per Jenis</div>
+        <table><thead><tr>{['Jenis','Rekening','Total Dana','Porsi'].map(h=><th key={h}>{h}</th>)}</tr></thead>
+          <tbody>{byJ.map(s=><tr key={s.j}><td>{s.j}</td><td>{s.n}</td><td><strong>{fmt(s.t)}</strong></td><td>{totS>0?Math.round(s.t/totS*100):0}%</td></tr>)}
+            <tr style={{background:'#f7f7f3'}}><td><strong>Total</strong></td><td><strong>{simpanan.length}</strong></td><td><strong style={{color:'var(--t)'}}>{fmt(totS)}</strong></td><td><strong>100%</strong></td></tr>
+          </tbody></table>
+      </div>
+    </div>;
+  }
+  const pc={dashboard:<Dashboard/>,anggota:<PgA/>,simpanan:<PgS/>,pinjaman:<PgP/>,transaksi:<PgT/>,laporan:<PgL/>};
+  return <div className="flex oh" style={{height:'100vh'}}>
+    <div className="sidebar">
+      <div className="s-logo"><div className="s-brand">MAS Jatim</div><div className="s-sub">Panel Admin</div></div>
+      <div className="flex fc f1 oy" style={{padding:'6px 0'}}>{pages.map(p=><div key={p.id} className={`nav-it ${pg===p.id?'on':''}`} onClick={()=>setPg(p.id)}><i className={`ti ${p.icon}`}/><span>{p.lbl}</span></div>)}</div>
+      <div style={{padding:'10px 14px',borderTop:'1px solid rgba(255,255,255,0.1)'}}>
+        <button className="btn btn-xs" style={{width:'100%',justifyContent:'center',marginBottom:6,color:'rgba(255,255,255,0.65)',borderColor:'rgba(255,255,255,0.2)',background:'rgba(255,255,255,0.08)'}} onClick={onOpenSetup}><i className="ti ti-brand-firebase"/> Firebase</button>
+        <button className="btn btn-xs" style={{width:'100%',justifyContent:'center',color:'rgba(255,255,255,0.65)',borderColor:'rgba(255,255,255,0.15)',background:'transparent'}} onClick={onLogout}><i className="ti ti-logout"/> Keluar</button>
+      </div>
+    </div>
+    <div className="flex fc f1 oh">
+      <div className="topbar">
+        <div><div style={{fontSize:14,fontWeight:700}}>{pt[pg]}</div><div style={{fontSize:10,color:'#666',marginTop:1}}>Koperasi MAS Jatim · Admin</div></div>
+        <div style={{display:'flex',alignItems:'center',gap:8}}>
+          <FbBadge status={fbStatus}/>
+          <button className="btn btn-sm btn-pur" onClick={()=>setShowImport(true)}><i className="ti ti-file-import"/> Import</button>
+          <BellMenu notifs={notifs} readIds={readIds} onRead={ids=>setReadIds(r=>[...new Set([...r,...ids])])} dark={false}/>
+        </div>
+      </div>
+      <div className="content-area">
+        {pc[pg]}
+        <ImportModal show={showImport} onClose={()=>setShowImport(false)} data={data} upd={upd}/>
+        <Modal show={!!mA} onClose={()=>setMA(null)} title={mA==='new'?'Tambah Anggota':'Edit Anggota'} onSave={saveA}>
+          <div className="fr"><div className="fg"><label>Nama Lengkap</label><input className="inp" value={fA.nama||''} onChange={e=>setFA({...fA,nama:e.target.value})}/></div><div className="fg"><label>NIK</label><input className="inp" value={fA.nik||''} onChange={e=>setFA({...fA,nik:e.target.value})}/></div></div>
+          <div className="fr"><div className="fg"><label>Telepon</label><input className="inp" value={fA.phone||''} onChange={e=>setFA({...fA,phone:e.target.value})}/></div><div className="fg"><label>Status</label><select className="sel" value={fA.status||'Aktif'} onChange={e=>setFA({...fA,status:e.target.value})}><option>Aktif</option><option>Non-Aktif</option></select></div></div>
+          <div className="fg"><label>Alamat</label><input className="inp" value={fA.alamat||''} onChange={e=>setFA({...fA,alamat:e.target.value})}/></div>
+        </Modal>
+        <Modal show={mS} onClose={()=>setMS(false)} title="Buka Rekening Simpanan" onSave={saveS}>
+          <div className="fr"><div className="fg"><label>Anggota</label><select className="sel" value={fS.aid} onChange={e=>setFS({...fS,aid:e.target.value})}>{anggota.filter(a=>a.status==='Aktif').map(a=><option key={a.id} value={a.id}>{a.nama}</option>)}</select></div><div className="fg"><label>Jenis</label><select className="sel" value={fS.jenis} onChange={e=>setFS({...fS,jenis:e.target.value})}>{JENIS.map(j=><option key={j}>{j}</option>)}</select></div></div>
+          <div className="fr"><div className="fg"><label>Setoran Awal (Rp)</label><input className="inp" type="number" value={fS.saldo} onChange={e=>setFS({...fS,saldo:e.target.value})}/></div><div className="fg"><label>Bagi Hasil % p.a.</label><input className="inp" type="number" value={fS.bh} onChange={e=>setFS({...fS,bh:e.target.value})}/></div></div>
+          <div className="fr"><div className="fg"><label>Tgl Buka</label><input className="inp" type="date" value={fS.tgl} onChange={e=>setFS({...fS,tgl:e.target.value})}/></div><div className="fg"><label>Jatuh Tempo</label><input className="inp" type="date" value={fS.jt} onChange={e=>setFS({...fS,jt:e.target.value})}/></div></div>
+        </Modal>
+        <Modal show={mP} onClose={()=>setMP(false)} title="Pengajuan Pinjaman" onSave={saveP}>
+          <div className="fr"><div className="fg"><label>Anggota</label><select className="sel" value={fP.aid} onChange={e=>setFP({...fP,aid:e.target.value})}>{anggota.filter(a=>a.status==='Aktif').map(a=><option key={a.id} value={a.id}>{a.nama}</option>)}</select></div><div className="fg"><label>Jumlah (Rp)</label><input className="inp" type="number" value={fP.jumlah} onChange={e=>setFP({...fP,jumlah:e.target.value})}/></div></div>
+          <div className="fr"><div className="fg"><label>Tenor (bln)</label><input className="inp" type="number" value={fP.tenor} onChange={e=>setFP({...fP,tenor:e.target.value})}/></div><div className="fg"><label>Bunga %/bln</label><input className="inp" type="number" step="0.1" value={fP.bunga} onChange={e=>setFP({...fP,bunga:e.target.value})}/></div></div>
+          {fP.jumlah&&fP.tenor&&<div className="alert-box alert-teal">Estimasi: <strong>{fmt(Math.round(+fP.jumlah/+fP.tenor))}</strong>/bln · Status awal: Menunggu</div>}
+        </Modal>
+        <Modal show={mT} onClose={()=>setMT(false)} title="Transaksi Manual" onSave={saveT}>
+          <div className="fr"><div className="fg"><label>Anggota</label><select className="sel" value={fT.aid} onChange={e=>setFT({...fT,aid:e.target.value})}>{anggota.map(a=><option key={a.id} value={a.id}>{a.nama}</option>)}</select></div><div className="fg"><label>Jenis</label><select className="sel" value={fT.jenis} onChange={e=>setFT({...fT,jenis:e.target.value})}>{'Setor Simpanan,Tarik Simpanan,Angsuran,Bagi Hasil,Lainnya'.split(',').map(j=><option key={j}>{j}</option>)}</select></div></div>
+          <div className="fr"><div className="fg"><label>Nominal (Rp)</label><input className="inp" type="number" value={fT.nom} onChange={e=>setFT({...fT,nom:e.target.value})}/></div><div className="fg"><label>Tipe</label><select className="sel" value={fT.tipe} onChange={e=>setFT({...fT,tipe:e.target.value})}><option value="K">Kredit (masuk)</option><option value="D">Debet (keluar)</option></select></div></div>
+          <div className="fg"><label>Keterangan</label><input className="inp" value={fT.ket} onChange={e=>setFT({...fT,ket:e.target.value})}/></div>
+        </Modal>
+      </div>
+    </div>
+  </div>;
+}
+
+/* ══════════════ MEMBER APP ══════════════ */
+function MemberApp({data,upd,memberId,onLogout,fbStatus}){
+  const [pg,setPg]=useState('beranda'),[mSetor,setMSetor]=useState(false),[fSetor,setFSetor]=useState({sid:'',nom:'',jenis:'setor'}),[mAjukan,setMAjukan]=useState(false),[fAjukan,setFAjukan]=useState({jumlah:'',tenor:12}),[readIds,setReadIds]=useState([]);
+  const {anggota,simpanan,pinjaman,transaksi}=data;
+  const me=anggota.find(a=>a.id===memberId)||{};
+  const mySmp=simpanan.filter(s=>s.aid===memberId),myPin=pinjaman.filter(p=>p.aid===memberId),myTx=transaksi.filter(t=>t.aid===memberId);
+  const totSaldo=mySmp.reduce((s,x)=>s+x.saldo,0),notifs=getMemberNotifs(data,memberId);
+  const doSetor=()=>{if(!fSetor.sid||!fSetor.nom)return;const n=+fSetor.nom;if(fSetor.jenis==='setor'){upd('simpanan',simpanan.map(s=>s.id===fSetor.sid?{...s,saldo:s.saldo+n}:s));upd('transaksi',[{id:newId('T',transaksi),tgl:TODAY,aid:memberId,jenis:'Setor Simpanan',ket:'Via portal',nom:n,tipe:'K'},...transaksi]);}else{const s=simpanan.find(x=>x.id===fSetor.sid);if(!s||s.saldo<n){alert('Saldo tidak cukup');return;}upd('simpanan',simpanan.map(x=>x.id===fSetor.sid?{...x,saldo:x.saldo-n}:x));upd('transaksi',[{id:newId('T',transaksi),tgl:TODAY,aid:memberId,jenis:'Tarik Simpanan',ket:'Via portal',nom:n,tipe:'D'},...transaksi]);}setMSetor(false)};
+  const doAjukan=()=>{if(!fAjukan.jumlah)return;const j=+fAjukan.jumlah,t=+fAjukan.tenor;const np={id:newId('P',pinjaman),aid:memberId,jumlah:j,sisa:j,cicilan:Math.round(j/t),bunga:1.5,tenor:t,ke:0,tgl:TODAY,status:'Menunggu'};upd('pinjaman',[...pinjaman,np]);upd('transaksi',[{id:newId('T',transaksi),tgl:TODAY,aid:memberId,jenis:'Pengajuan Pinjaman',ket:'Pengajuan '+np.id,nom:j,tipe:'K'},...transaksi]);setMAjukan(false)};
+  const doBayar=p=>{const sisa=Math.max(0,p.sisa-p.cicilan);upd('pinjaman',pinjaman.map(x=>x.id===p.id?{...x,sisa,ke:x.ke+1,status:sisa===0?'Lunas':'Aktif'}:x));upd('transaksi',[{id:newId('T',transaksi),tgl:TODAY,aid:memberId,jenis:'Angsuran',ket:'Cicilan '+p.id,nom:p.cicilan,tipe:'K'},...transaksi])};
+  const tabs=[{id:'beranda',icon:'ti-home',l:'Beranda'},{id:'simpanan',icon:'ti-piggy-bank',l:'Simpanan'},{id:'pinjaman',icon:'ti-receipt',l:'Pinjaman'},{id:'transaksi',icon:'ti-history',l:'Riwayat'},{id:'profil',icon:'ti-user-circle',l:'Profil'}];
+  function Beranda(){return <div>
+    <div className="hero-card"><div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start'}}><div><div style={{fontSize:11,color:'rgba(255,255,255,.7)'}}>Halo, {me.nama?.split(' ')[0]} 👋</div><div style={{fontSize:10,color:'rgba(255,255,255,.6)',marginTop:2}}>Total Saldo</div><div style={{fontSize:22,fontWeight:700,margin:'4px 0 2px'}}>{fmt(totSaldo)}</div></div><div style={{textAlign:'right'}}><FbBadge status={fbStatus}/></div></div></div>
+    <div className="qa-grid"><button className="qa-btn" onClick={()=>{setFSetor({sid:mySmp[0]?.id||'',nom:'',jenis:'setor'});setMSetor(true)}}><i className="ti ti-arrow-down-circle"/>Setor</button><button className="qa-btn" onClick={()=>{setFSetor({sid:mySmp[0]?.id||'',nom:'',jenis:'tarik'});setMSetor(true)}}><i className="ti ti-arrow-up-circle"/>Tarik</button><button className="qa-btn" onClick={()=>{setFAjukan({jumlah:'',tenor:12});setMAjukan(true)}}><i className="ti ti-cash"/>Pinjaman</button><button className="qa-btn" onClick={()=>setPg('transaksi')}><i className="ti ti-history"/>Riwayat</button></div>
+    {myPin.filter(p=>p.status==='Aktif').length>0&&<div className="card"><div className="sec-head"><span style={{fontSize:12,fontWeight:600}}>Tagihan Cicilan</span><span style={{fontSize:10,color:'#A32D2D'}}>Segera bayar</span></div>{myPin.filter(p=>p.status==='Aktif').map(p=><div key={p.id} style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'6px 0',borderBottom:'1px solid var(--brd)'}}><div><div style={{fontSize:12,fontWeight:600}}>{p.id} · ke-{p.ke+1}/{p.tenor}</div><div style={{fontSize:10,color:'#666'}}>{fmt(p.cicilan)}/bln</div></div><button className="btn btn-xs btn-p" onClick={()=>doBayar(p)}>Bayar</button></div>)}</div>}
+    <div className="card" style={{margin:0}}><div className="sec-head" style={{marginBottom:8}}><span style={{fontSize:12,fontWeight:600}}>Transaksi Terbaru</span></div>{myTx.length===0?<div style={{textAlign:'center',padding:16,color:'#666',fontSize:11}}>Belum ada transaksi</div>:myTx.slice(0,4).map(t=><div key={t.id} className="tx-row"><div><div style={{fontSize:12,fontWeight:600}}>{t.jenis}</div><div style={{fontSize:10,color:'#666'}}>{fmtD(t.tgl)}</div></div><strong style={{color:t.tipe==='K'?'#3B6D11':'#A32D2D'}}>{t.tipe==='K'?'+':'-'}{fmt(t.nom)}</strong></div>)}</div>
+  </div>;}
+  function PgMySmp(){return <div><div className="sec-head"><span style={{fontSize:13,fontWeight:600}}>Rekening Saya</span><button className="btn btn-sm btn-p" onClick={()=>{setFSetor({sid:mySmp[0]?.id||'',nom:'',jenis:'setor'});setMSetor(true)}}><i className="ti ti-plus"/> Setor</button></div>{mySmp.length===0?<div style={{textAlign:'center',padding:40,color:'#666'}}>Belum ada rekening</div>:mySmp.map(s=><div key={s.id} className="card"><div style={{display:'flex',justifyContent:'space-between',marginBottom:8}}><div><Bdg cls={JB[s.jenis]||'bt'}>{s.jenis}</Bdg><div style={{fontSize:16,fontWeight:700,margin:'4px 0 2px'}}>{fmt(s.saldo)}</div><div style={{fontSize:10,color:'#666'}}>{s.id} · {fmtD(s.tgl)}</div></div>{s.bh>0&&<span style={{fontSize:12,color:'#3B6D11',fontWeight:600}}>{s.bh}% p.a.</span>}</div>{s.jt&&<div style={{fontSize:10,color:'#BA7517',marginBottom:8}}>Jatuh tempo: {fmtD(s.jt)}</div>}<div style={{display:'flex',gap:6}}><button className="btn btn-sm btn-p" onClick={()=>{setFSetor({sid:s.id,nom:'',jenis:'setor'});setMSetor(true)}}>Setor</button><button className="btn btn-sm" onClick={()=>{setFSetor({sid:s.id,nom:'',jenis:'tarik'});setMSetor(true)}}>Tarik</button></div></div>)}</div>;}
+  function PgMyPin(){return <div><div className="sec-head"><span style={{fontSize:13,fontWeight:600}}>Pinjaman Saya</span><button className="btn btn-sm btn-p" onClick={()=>{setFAjukan({jumlah:'',tenor:12});setMAjukan(true)}}><i className="ti ti-plus"/> Ajukan</button></div>{myPin.length===0?<div style={{textAlign:'center',padding:40,color:'#666'}}>Belum ada pinjaman</div>:myPin.map(p=>{const pct=p.jumlah>0?Math.round((1-p.sisa/p.jumlah)*100):100;return<div key={p.id} className="card"><div style={{display:'flex',justifyContent:'space-between',marginBottom:6}}><div><span className="tag">{p.id}</span><div style={{fontSize:15,fontWeight:700,margin:'3px 0 2px'}}>{fmt(p.jumlah)}</div></div><Bdg cls={p.status==='Aktif'?'bg':p.status==='Lunas'?'bb':p.status==='Menunggu'?'ba':'br'}>{p.status}</Bdg></div><div style={{display:'flex',gap:12,fontSize:11,color:'#666',marginBottom:6}}><span>Sisa: {fmt(p.sisa)}</span><span>{fmt(p.cicilan)}/bln</span></div><div className="pbar"><div className="pfill" style={{width:pct+'%'}}/></div><div style={{display:'flex',justifyContent:'space-between',marginTop:6}}><span style={{fontSize:10,color:'#666'}}>Ke-{p.ke}/{p.tenor}</span>{p.status==='Aktif'&&<button className="btn btn-xs btn-p" onClick={()=>doBayar(p)}>Bayar</button>}{p.status==='Menunggu'&&<span style={{fontSize:10,color:'#BA7517'}}>Menunggu persetujuan</span>}</div></div>;})}
+  </div>;}
+  function PgMyTx(){return <div><div className="sec-head"><span style={{fontSize:13,fontWeight:600}}>Riwayat</span></div><div className="card" style={{margin:0}}>{myTx.length===0?<div style={{textAlign:'center',padding:24,color:'#666',fontSize:11}}>Belum ada transaksi</div>:myTx.map(t=><div key={t.id} className="tx-row"><div><div style={{fontSize:12,fontWeight:600}}>{t.jenis}</div><div style={{fontSize:10,color:'#666'}}>{t.ket} · {fmtD(t.tgl)}</div></div><strong style={{color:t.tipe==='K'?'#3B6D11':'#A32D2D'}}>{t.tipe==='K'?'+':'-'}{fmt(t.nom)}</strong></div>)}</div></div>;}
+  function PgProfil(){const ini=me.nama?.split(' ').slice(0,2).map(n=>n[0]).join('')||'?';return <div><div className="card" style={{textAlign:'center',padding:24,marginBottom:10}}><div style={{width:56,height:56,borderRadius:'50%',background:'var(--tl)',display:'inline-flex',alignItems:'center',justifyContent:'center',fontSize:18,fontWeight:700,color:'var(--t)',marginBottom:8}}>{ini}</div><div style={{fontSize:15,fontWeight:700}}>{me.nama}</div><div style={{fontSize:11,color:'#666',marginTop:2}}>{me.id} · Bergabung {fmtD(me.bergabung)}</div><div style={{marginTop:6}}><Bdg cls={me.status==='Aktif'?'bg':'br'}>{me.status}</Bdg></div></div><div className="card">{[['NIK',me.nik],['Telepon',me.phone],['Alamat',me.alamat],['Rekening',mySmp.length],['Total Saldo',fmt(totSaldo)]].map(([l,v],i)=><div key={i} className="ir"><span className="ir-lbl">{l}</span><span style={{fontWeight:i===4?600:undefined,color:i===4?'var(--t)':undefined}}>{v}</span></div>)}</div><button className="btn" style={{width:'100%',justifyContent:'center',marginTop:6}} onClick={onLogout}><i className="ti ti-logout"/> Keluar</button></div>;}
+  const mp={beranda:<Beranda/>,simpanan:<PgMySmp/>,pinjaman:<PgMyPin/>,transaksi:<PgMyTx/>,profil:<PgProfil/>};
+  return <div className="m-app">
+    <div className="m-top"><div style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}><span style={{fontSize:14,fontWeight:700}}>MAS Jatim</span><div style={{display:'flex',alignItems:'center',gap:8}}><BellMenu notifs={notifs} readIds={readIds} onRead={ids=>setReadIds(r=>[...new Set([...r,...ids])])} dark={true}/></div></div></div>
+    <div className="m-nav">{tabs.map(n=><button key={n.id} className={`mnav-btn ${pg===n.id?'on':''}`} onClick={()=>setPg(n.id)}><i className={`ti ${n.icon}`}/><span>{n.l}</span></button>)}</div>
+    <div className="m-content">{mp[pg]}
+      <Modal show={mSetor} onClose={()=>setMSetor(false)} title={fSetor.jenis==='setor'?'Setor Simpanan':'Tarik Simpanan'} onSave={doSetor}>
+        <div className="fg"><label>Pilih Rekening</label><select className="sel" value={fSetor.sid} onChange={e=>setFSetor({...fSetor,sid:e.target.value})}>{mySmp.map(s=><option key={s.id} value={s.id}>{s.jenis} — {fmt(s.saldo)}</option>)}</select></div>
+        <div className="fg"><label>Nominal (Rp)</label><input className="inp" type="number" value={fSetor.nom} onChange={e=>setFSetor({...fSetor,nom:e.target.value})} placeholder="0"/></div>
+        <div className="fg"><label>Jenis</label><select className="sel" value={fSetor.jenis} onChange={e=>setFSetor({...fSetor,jenis:e.target.value})}><option value="setor">Setor (tambah)</option><option value="tarik">Tarik (kurangi)</option></select></div>
+      </Modal>
+      <Modal show={mAjukan} onClose={()=>setMAjukan(false)} title="Ajukan Pinjaman" onSave={doAjukan}>
+        <div className="fg"><label>Jumlah (Rp)</label><input className="inp" type="number" value={fAjukan.jumlah} onChange={e=>setFAjukan({...fAjukan,jumlah:e.target.value})} placeholder="0"/></div>
+        <div className="fg"><label>Tenor</label><select className="sel" value={fAjukan.tenor} onChange={e=>setFAjukan({...fAjukan,tenor:e.target.value})}>{[6,12,18,24,36].map(t=><option key={t} value={t}>{t} bulan</option>)}</select></div>
+        {fAjukan.jumlah&&<div className="alert-box alert-teal">Estimasi: <strong>{fmt(Math.round(+fAjukan.jumlah/+fAjukan.tenor))}</strong>/bln · Perlu persetujuan admin</div>}
+      </Modal>
+    </div>
+  </div>;
+}
+
+/* ══════════════ LOGIN ══════════════ */
+function Login({onAdmin,onMember,anggota}){
+  const [tab,setTab]=useState('admin'),[pwd,setPwd]=useState(''),[selA,setSelA]=useState(anggota[0]?.id||''),[pin,setPin]=useState(''),[err,setErr]=useState('');
+  const tryAdmin=()=>{if(pwd===ADMIN_PWD)onAdmin();else setErr('Password salah. Gunakan: mas2025')};
+  const addPin=k=>{if(k==='⌫'){setPin(p=>p.slice(0,-1));setErr('');return}if(pin.length>=4)return;const np=pin+k;setPin(np);if(np.length===4){if(np===MEMBER_PIN)setTimeout(()=>onMember(selA),80);else{setErr('PIN salah. Gunakan: 1234');setTimeout(()=>setPin(''),300);}}};
+  return <div className="center-wrap"><div className="login-card">
+    <div style={{textAlign:'center',marginBottom:20}}><div style={{width:52,height:52,borderRadius:'50%',background:'var(--tl)',display:'inline-flex',alignItems:'center',justifyContent:'center',fontSize:24,marginBottom:8}}>🏦</div><div style={{fontSize:17,fontWeight:700}}>MAS Jatim</div><div style={{fontSize:11,color:'#666'}}>Mandiri Artha Sejahtera Jatim</div></div>
+    <div className="tab-bar"><button className={`tb ${tab==='admin'?'on':''}`} onClick={()=>{setTab('admin');setErr('');setPin('');setPwd('')}}><i className="ti ti-shield-lock" style={{marginRight:4,fontSize:12}}/>Admin</button><button className={`tb ${tab==='member'?'on':''}`} onClick={()=>{setTab('member');setErr('');setPin('');setPwd('')}}><i className="ti ti-user" style={{marginRight:4,fontSize:12}}/>Anggota</button></div>
+    {tab==='admin'?<div>
+      <div className="fg"><label>Username</label><input className="inp" value="admin" readOnly/></div>
+      <div className="fg"><label>Password</label><input className="inp" type="password" value={pwd} onChange={e=>{setPwd(e.target.value);setErr('')}} placeholder="Masukkan password" onKeyDown={e=>e.key==='Enter'&&tryAdmin()}/></div>
+      {err&&<div style={{fontSize:11,color:'#A32D2D',marginBottom:8}}>{err}</div>}
+      <button className="btn btn-p" style={{width:'100%',justifyContent:'center',padding:'9px'}} onClick={tryAdmin}><i className="ti ti-login"/> Masuk sebagai Admin</button>
+      <div style={{fontSize:10,color:'#666',textAlign:'center',marginTop:8}}>Password demo: <strong>mas2025</strong></div>
+    </div>:<div>
+      <div className="fg"><label>Pilih Nama Anggota</label><select className="sel" value={selA} onChange={e=>{setSelA(e.target.value);setErr('')}}>{anggota.filter(a=>a.status==='Aktif').map(a=><option key={a.id} value={a.id}>{a.nama}</option>)}</select></div>
+      <div className="fg"><label>PIN (4 digit)</label><div style={{textAlign:'center',margin:'8px 0'}}>{[0,1,2,3].map(x=><span key={x} className={`pin-dot ${pin.length>x?'filled':''}`}/>)}</div><div className="pin-grid">{[1,2,3,4,5,6,7,8,9,null,0,'⌫'].map((k,i)=>k!==null?<button key={i} className="pin-key" onClick={()=>addPin(k)}>{k}</button>:<div key={i}/>)}</div></div>
+      {err&&<div style={{fontSize:11,color:'#A32D2D',textAlign:'center',marginBottom:6}}>{err}</div>}
+      <div style={{fontSize:10,color:'#666',textAlign:'center',marginTop:4}}>PIN demo: <strong>1234</strong></div>
+    </div>}
+  </div></div>;
+}
+
+/* ══════════════ MAIN APP ══════════════ */
+function App(){
+  const [screen,setScreen]=useState('loading'); // loading|setup|login|admin|member
+  const [memberId,setMemberId]=useState(null);
+  const [data,setData]=useState(null);
+  const [fbStatus,setFbStatus]=useState('disconnected');
+  const [showSetup,setShowSetup]=useState(false);
+
+  // Load saved config on mount
+  useEffect(()=>{
+    const saved=localStorage.getItem('mas_fb_config');
+    if(saved){
+      try{
+        const cfg=JSON.parse(saved);
+        connectFirebase(cfg);
+      }catch{loadLocal();}
+    } else {
+      setScreen('setup');
+    }
+  },[]);
+
+  const loadLocal=()=>{
+    try{const s=localStorage.getItem('mas_koperasi');setData(s?JSON.parse(s):initData());}catch{setData(initData());}
+    setScreen('login');setFbStatus('error');
+  };
+
+  const connectFirebase=cfg=>{
+    setFbStatus('connecting');
+    initFirebase(cfg,
+      newData=>{
+        setData(newData);
+        setScreen(s=>s==='loading'||s==='setup'?'login':s);
+      },
+      status=>{
+        setFbStatus(status);
+        if(status==='error')loadLocal();
+      }
+    );
+  };
+
+  const upd=(k,v)=>{
+    const nd={...data,[k]:v};
+    setData(nd);
+    writeToFirebase(nd);
+    // Fallback: also save locally
+    try{localStorage.setItem('mas_koperasi',JSON.stringify(nd));}catch{}
+  };
+
+  const handleFbConnect=cfg=>{
+    setShowSetup(false);
+    connectFirebase(cfg);
+  };
+
+  const handleSkipSetup=()=>{
+    setShowSetup(false);
+    if(!data){loadLocal();}
+  };
+
+  if(screen==='loading')return <div style={{display:'flex',alignItems:'center',justifyContent:'center',height:'100vh',flexDirection:'column',gap:10,color:'#666'}}><i className="ti ti-loader-2" style={{fontSize:32,animation:'spin 1s linear infinite'}}/><span>Memuat aplikasi...</span></div>;
+  if(screen==='setup'||showSetup)return <FirebaseSetup onConnect={handleFbConnect} onSkip={handleSkipSetup}/>;
+  if(!data)return <div style={{display:'flex',alignItems:'center',justifyContent:'center',height:'100vh',flexDirection:'column',gap:10,color:'#666'}}><i className="ti ti-loader-2" style={{fontSize:32,animation:'spin 1s linear infinite'}}/><span>Menghubungkan ke database...</span></div>;
+
+  return <>
+    {screen==='login'&&<Login onAdmin={()=>setScreen('admin')} onMember={id=>{setMemberId(id);setScreen('member')}} anggota={data.anggota}/>}
+    {screen==='admin'&&<AdminApp data={data} upd={upd} onLogout={()=>setScreen('login')} fbStatus={fbStatus} onOpenSetup={()=>setShowSetup(true)}/>}
+    {screen==='member'&&<MemberApp data={data} upd={upd} memberId={memberId} onLogout={()=>setScreen('login')} fbStatus={fbStatus}/>}
+    <InstallBanner/>
+  </>;
+}
+
+const se=document.createElement('style');
+se.textContent='@keyframes spin{to{transform:rotate(360deg)}}@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}';
+document.head.appendChild(se);
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
