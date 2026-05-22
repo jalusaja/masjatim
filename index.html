@@ -144,10 +144,10 @@ tbody tr:hover td{background:#f7f7f3}
 @keyframes spin{to{transform:rotate(360deg)}}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
 
-.adm-mob{display:none}
+.admmob{display:none}
 @media(max-width:768px){
 .sidebar{display:none!important}
-.adm-mob{display:flex!important;position:fixed;bottom:0;left:0;right:0;z-index:200;background:var(--sur);border-top:1px solid var(--brd)}
+.admmob{display:flex!important;position:fixed;bottom:0;left:0;right:0;z-index:200;background:var(--sur);border-top:1px solid var(--brd)}
 .content-area{padding-bottom:68px!important}
 .grid-4{grid-template-columns:1fr 1fr!important;gap:8px!important}
 .grid-2{grid-template-columns:1fr!important}
@@ -156,23 +156,9 @@ tbody tr:hover td{background:#f7f7f3}
 .fr{grid-template-columns:1fr!important}
 .login-card{width:94vw;padding:20px 16px}
 .setup-card{width:96vw}
-.notif-panel{right:-60px;width:260px}
-.export-bar{flex-wrap:wrap}
 }</style>
 <script>
-(function(){
-  if(!localStorage.getItem('mas_fb_config')){
-    localStorage.setItem('mas_fb_config',JSON.stringify({
-      apiKey:"AIzaSyCd-_S0cvEJUSzWI6qmzUBgWcMh7RpnGPg",
-      authDomain:"masjatim-14f52.firebaseapp.com",
-      databaseURL:"https://masjatim-14f52-default-rtdb.asia-southeast1.firebasedatabase.app",
-      projectId:"masjatim-14f52",
-      storageBucket:"masjatim-14f52.firebasestorage.app",
-      messagingSenderId:"945024614310",
-      appId:"1:945024614310:web:85df0905969e3ffd705967"
-    }));
-  }
-})();
+(function(){if(!localStorage.getItem('mas_fb_config')){localStorage.setItem('mas_fb_config',JSON.stringify({apiKey:"AIzaSyCd-_S0cvEJUSzWI6qmzUBgWcMh7RpnGPg",authDomain:"masjatim-14f52.firebaseapp.com",databaseURL:"https://masjatim-14f52-default-rtdb.asia-southeast1.firebasedatabase.app",projectId:"masjatim-14f52",storageBucket:"masjatim-14f52.firebasestorage.app",messagingSenderId:"945024614310",appId:"1:945024614310:web:85df0905969e3ffd705967"}));}})();
 </script></head>
 <body>
 <div id="root"></div>
@@ -460,7 +446,6 @@ const initData = () => ({
     bank_nama: 'BRI',
     bank_no: '',
     bank_atas_nama: 'Koperasi MAS Jatim',
-    qris_url: '',
     wa_admin: ''
   },
   transaksi: [{
@@ -1821,271 +1806,6 @@ function InstallBanner() {
   }, "\u2715"));
 }
 
-/* ─ PAYMENT MODAL ─ */
-function PayModal({
-  show,
-  onClose,
-  data,
-  upd,
-  memberId,
-  defaultNom
-}) {
-  const [tab, setTab] = useState('transfer');
-  const [nom, setNom] = useState(defaultNom || '');
-  const [ket, setKet] = useState('');
-  const [done, setDone] = useState(false);
-  const s = data.settings || {};
-  const myName = data.anggota.find(a => a.id === memberId)?.nama || '';
-  useEffect(() => {
-    if (show) {
-      setDone(false);
-      setNom(defaultNom || '');
-      setKet('');
-    }
-  }, [show, defaultNom]);
-  const submit = () => {
-    if (!nom) return;
-    const k = {
-      id: 'K' + Date.now(),
-      aid: memberId,
-      nama: myName,
-      tgl: TODAY,
-      nominal: +nom,
-      metode: tab,
-      ket,
-      status: 'Menunggu'
-    };
-    upd('konfirmasi_bayar', [...(data.konfirmasi_bayar || []), k]);
-    setDone(true);
-  };
-  if (!show) return null;
-  return /*#__PURE__*/React.createElement("div", {
-    className: "modal-bg",
-    onClick: e => {
-      if (e.target === e.currentTarget) onClose();
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "modal-box"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "modal-head"
-  }, /*#__PURE__*/React.createElement("span", null, "Cara Pembayaran"), /*#__PURE__*/React.createElement("button", {
-    className: "btn btn-xs",
-    onClick: onClose
-  }, /*#__PURE__*/React.createElement("i", {
-    className: "ti ti-x"
-  }))), /*#__PURE__*/React.createElement("div", {
-    className: "modal-body"
-  }, done ? /*#__PURE__*/React.createElement("div", {
-    style: {
-      textAlign: 'center',
-      padding: '20px 0'
-    }
-  }, /*#__PURE__*/React.createElement("i", {
-    className: "ti ti-circle-check",
-    style: {
-      fontSize: 56,
-      color: '#3B6D11',
-      display: 'block',
-      marginBottom: 8
-    }
-  }), /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 15,
-      fontWeight: 700,
-      marginBottom: 4
-    }
-  }, "Konfirmasi Terkirim!"), /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 12,
-      color: '#666',
-      marginBottom: 16
-    }
-  }, "Admin akan memverifikasi pembayaran Anda."), s.wa_admin && /*#__PURE__*/React.createElement("a", {
-    href: `https://wa.me/${s.wa_admin}?text=Halo+admin,+saya+${encodeURIComponent(myName)}+sudah+bayar+Rp${nom}`,
-    target: "_blank",
-    style: {
-      display: 'inline-flex',
-      alignItems: 'center',
-      gap: 6,
-      background: '#25D366',
-      color: '#fff',
-      padding: '9px 18px',
-      borderRadius: 8,
-      fontSize: 12,
-      textDecoration: 'none',
-      fontWeight: 600
-    }
-  }, /*#__PURE__*/React.createElement("i", {
-    className: "ti ti-brand-whatsapp",
-    style: {
-      fontSize: 16
-    }
-  }), "Konfirmasi via WhatsApp")) : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
-    style: {
-      display: 'flex',
-      borderBottom: '2px solid var(--brd)',
-      marginBottom: 14
-    }
-  }, [['transfer', 'ti-building-bank', 'Transfer Bank'], ['qris', 'ti-qrcode', 'QRIS']].map(([id, icon, lbl]) => /*#__PURE__*/React.createElement("button", {
-    key: id,
-    style: {
-      flex: 1,
-      padding: '9px 0',
-      cursor: 'pointer',
-      border: 'none',
-      background: 'transparent',
-      fontFamily: 'inherit',
-      fontSize: 12,
-      fontWeight: 600,
-      color: tab === id ? 'var(--t)' : '#888',
-      borderBottom: tab === id ? '2px solid var(--t)' : '2px solid transparent',
-      marginBottom: -2
-    },
-    onClick: () => setTab(id)
-  }, /*#__PURE__*/React.createElement("i", {
-    className: `ti ${icon}`,
-    style: {
-      marginRight: 4
-    }
-  }), lbl))), tab === 'transfer' ? /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
-    style: {
-      background: 'linear-gradient(135deg,#f0f4ff,#e8f0fe)',
-      borderRadius: 10,
-      padding: '16px',
-      marginBottom: 12,
-      textAlign: 'center',
-      border: '1px solid #c7d8f8'
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 11,
-      color: '#666'
-    }
-  }, "Transfer ke rekening"), /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 16,
-      fontWeight: 700,
-      color: 'var(--t)',
-      marginTop: 4
-    }
-  }, s.bank_nama || 'BRI'), /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 24,
-      fontWeight: 700,
-      letterSpacing: 3,
-      margin: '6px 0',
-      color: 'var(--t3)'
-    }
-  }, s.bank_no || '—'), /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 12
-    }
-  }, "a.n. ", /*#__PURE__*/React.createElement("strong", null, s.bank_atas_nama || 'Koperasi MAS Jatim')), /*#__PURE__*/React.createElement("button", {
-    onClick: () => navigator.clipboard?.writeText((s.bank_no || '').replace(/[^0-9]/g, '')),
-    style: {
-      marginTop: 8,
-      background: 'none',
-      border: '1px solid var(--t)',
-      color: 'var(--t)',
-      borderRadius: 6,
-      padding: '3px 10px',
-      fontSize: 11,
-      cursor: 'pointer',
-      fontFamily: 'inherit'
-    }
-  }, "Salin Nomor"))) : /*#__PURE__*/React.createElement("div", {
-    style: {
-      textAlign: 'center',
-      padding: '8px 0'
-    }
-  }, s.qris_url ? /*#__PURE__*/React.createElement("img", {
-    src: s.qris_url,
-    style: {
-      width: 200,
-      height: 200,
-      objectFit: 'contain',
-      borderRadius: 8,
-      border: '1px solid var(--brd)',
-      display: 'block',
-      margin: '0 auto'
-    }
-  }) : /*#__PURE__*/React.createElement("div", {
-    style: {
-      width: 200,
-      height: 200,
-      background: '#f0f0ea',
-      borderRadius: 8,
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      margin: '0 auto',
-      gap: 8
-    }
-  }, /*#__PURE__*/React.createElement("i", {
-    className: "ti ti-qrcode",
-    style: {
-      fontSize: 48,
-      color: '#ccc'
-    }
-  }), /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 11,
-      color: '#888'
-    }
-  }, "QRIS belum diatur admin")), /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 11,
-      color: '#666',
-      marginTop: 10
-    }
-  }, "Scan menggunakan aplikasi bank / e-wallet manapun")), /*#__PURE__*/React.createElement("div", {
-    style: {
-      marginTop: 12
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      marginBottom: 8
-    }
-  }, /*#__PURE__*/React.createElement("label", {
-    style: {
-      fontSize: 10,
-      fontWeight: 600,
-      color: '#666',
-      display: 'block',
-      marginBottom: 3
-    }
-  }, "JUMLAH YANG DIBAYAR (RP)"), /*#__PURE__*/React.createElement("input", {
-    className: "inp",
-    type: "number",
-    value: nom,
-    onChange: e => setNom(e.target.value),
-    placeholder: "0"
-  })), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("label", {
-    style: {
-      fontSize: 10,
-      fontWeight: 600,
-      color: '#666',
-      display: 'block',
-      marginBottom: 3
-    }
-  }, "KETERANGAN (OPSIONAL)"), /*#__PURE__*/React.createElement("input", {
-    className: "inp",
-    value: ket,
-    onChange: e => setKet(e.target.value),
-    placeholder: "Contoh: Cicilan P001 bulan Mei"
-  }))))), !done && /*#__PURE__*/React.createElement("div", {
-    className: "modal-foot"
-  }, /*#__PURE__*/React.createElement("button", {
-    className: "btn btn-sm",
-    onClick: onClose
-  }, "Batal"), /*#__PURE__*/React.createElement("button", {
-    className: "btn btn-sm btn-p",
-    onClick: submit
-  }, /*#__PURE__*/React.createElement("i", {
-    className: "ti ti-check"
-  }), " Konfirmasi Sudah Bayar"))));
-}
 /* ══════════════ ADMIN APP ══════════════ */
 function AdminApp({
   data,
@@ -2125,14 +1845,14 @@ function AdminApp({
   const [fJ, setFJ] = useState('Semua'),
     [readIds, setReadIds] = useState([]),
     [showImport, setShowImport] = useState(false);
-  const _prevK = useRef(0),
-    _prevP = useRef(0);
+  const _pk = useRef(-1),
+    _pp = useRef(-1);
   useEffect(() => {
     if ('Notification' in window && Notification.permission === 'default') Notification.requestPermission();
   }, []);
   useEffect(() => {
-    const nK = (data.konfirmasi_bayar || []).filter(k => k.status === 'Menunggu').length;
-    const nP = (data.pinjaman || []).filter(p => p.status === 'Menunggu').length;
+    const nk = (data.konfirmasi_bayar || []).filter(x => x.status === 'Menunggu').length;
+    const np = (data.pinjaman || []).filter(x => x.status === 'Menunggu').length;
     const N = (t, b) => {
       if ('Notification' in window && Notification.permission === 'granted') {
         try {
@@ -2142,10 +1862,10 @@ function AdminApp({
         } catch (e) {}
       }
     };
-    if (_prevK.current > 0 && nK > _prevK.current) N('💰 Konfirmasi Pembayaran', `${nK} konfirmasi menunggu verifikasi`);
-    if (_prevP.current > 0 && nP > _prevP.current) N('📋 Pengajuan Pinjaman', `${nP} pengajuan menunggu persetujuan`);
-    _prevK.current = nK;
-    _prevP.current = nP;
+    if (_pk.current >= 0 && nk > _pk.current) N('💰 Konfirmasi Pembayaran', nk + ' konfirmasi menunggu');
+    if (_pp.current >= 0 && np > _pp.current) N('📋 Pengajuan Pinjaman', np + ' pengajuan menunggu');
+    _pk.current = nk;
+    _pp.current = np;
   }, [data.konfirmasi_bayar, data.pinjaman]);
   const {
     anggota,
@@ -2296,26 +2016,27 @@ function AdminApp({
     const pend = pinjaman.filter(p => p.status === 'Menunggu');
     return /*#__PURE__*/React.createElement("div", null, (() => {
       const pk = (data.konfirmasi_bayar || []).filter(k => k.status === 'Menunggu');
-      const verifK = (k, ok) => {
+      if (!pk.length) return null;
+      const verif = (k, ok) => {
         upd('konfirmasi_bayar', (data.konfirmasi_bayar || []).map(x => x.id === k.id ? {
           ...x,
-          status: ok ? 'Terverifikasi' : 'Ditolak'
+          status: ok ? 'OK' : 'Ditolak'
         } : x));
         if (ok) upd('transaksi', [{
           id: 'T' + Date.now(),
           tgl: TODAY,
           aid: k.aid,
           jenis: 'Pembayaran',
-          ket: (k.metode === 'qris' ? 'QRIS' : 'Transfer') + (k.ket ? ' · ' + k.ket : ''),
+          ket: 'Transfer · ' + (k.ket || ''),
           nom: k.nominal,
           tipe: 'K'
         }, ...transaksi]);
       };
-      return pk.length > 0 ? /*#__PURE__*/React.createElement("div", {
+      return /*#__PURE__*/React.createElement("div", {
         className: "card",
         style: {
-          marginBottom: 12,
-          border: '2px solid #185FA5'
+          border: '2px solid #185FA5',
+          marginBottom: 12
         }
       }, /*#__PURE__*/React.createElement("div", {
         className: "sec-head"
@@ -2330,13 +2051,13 @@ function AdminApp({
         style: {
           marginRight: 6
         }
-      }), "\uD83D\uDCB0 Konfirmasi Pembayaran Masuk (", pk.length, ")")), pk.map(k => /*#__PURE__*/React.createElement("div", {
+      }), "Konfirmasi Pembayaran (", pk.length, ")")), pk.map(k => /*#__PURE__*/React.createElement("div", {
         key: k.id,
         style: {
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          padding: '8px 0',
+          padding: '7px 0',
           borderBottom: '1px solid var(--brd)'
         }
       }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
@@ -2344,33 +2065,28 @@ function AdminApp({
           fontSize: 12,
           fontWeight: 600
         }
-      }, k.nama || gN(k.aid), " \xB7 ", /*#__PURE__*/React.createElement("span", {
-        style: {
-          color: k.metode === 'qris' ? '#185FA5' : '#3B6D11',
-          fontSize: 11
-        }
-      }, k.metode === 'qris' ? 'QRIS' : 'Transfer')), /*#__PURE__*/React.createElement("div", {
+      }, gN(k.aid), " \u2014 ", fmt(k.nominal)), /*#__PURE__*/React.createElement("div", {
         style: {
           fontSize: 10,
           color: '#666'
         }
-      }, fmt(k.nominal), " \xB7 ", fmtD(k.tgl), k.ket ? ' · ' + k.ket : '')), /*#__PURE__*/React.createElement("div", {
+      }, fmtD(k.tgl), k.ket ? ' · ' + k.ket : '')), /*#__PURE__*/React.createElement("div", {
         style: {
           display: 'flex',
           gap: 4
         }
       }, /*#__PURE__*/React.createElement("button", {
         className: "btn btn-xs btn-p",
-        onClick: () => verifK(k, true)
+        onClick: () => verif(k, true)
       }, "\u2713 Verifikasi"), /*#__PURE__*/React.createElement("button", {
         className: "btn btn-xs",
         style: {
           color: '#A32D2D',
-          borderColor: '#F0B8B8',
-          background: '#FCEBEB'
+          background: '#FCEBEB',
+          border: '1px solid #F0B8B8'
         },
-        onClick: () => verifK(k, false)
-      }, "\u2715 Tolak"))))) : null;
+        onClick: () => verif(k, false)
+      }, "\u2715 Tolak")))));
     })(), /*#__PURE__*/React.createElement("div", {
       className: "grid-4"
     }, [['Anggota', anggota.length, aktif + ' aktif'], ['Total Simpanan', fmt(totS), simpanan.length + ' rekening'], ['Pinjaman Berjalan', fmt(totP), pAktif + ' aktif'], ['Menunggu Approval', pend.length, pend.length > 0 ? 'Perlu disetujui' : 'Semua clear']].map(([l, v, s], i) => /*#__PURE__*/React.createElement("div", {
@@ -2916,26 +2632,23 @@ function AdminApp({
   function PgPengaturan() {
     const s = data.settings || {};
     const [f, setF] = useState({
-      bank_nama: s.bank_nama || 'BRI',
+      bank_nama: s.bank_nama || '',
       bank_no: s.bank_no || '',
       bank_atas_nama: s.bank_atas_nama || '',
-      qris_url: s.qris_url || '',
       wa_admin: s.wa_admin || ''
     });
     const save = () => {
-      upd('settings', {
-        ...f
-      });
-      alert('✓ Pengaturan disimpan!');
+      upd('settings', f);
+      alert('Pengaturan disimpan!');
     };
     const reqN = () => {
-      'Notification' in window && Notification.requestPermission().then(p => alert(p === 'granted' ? '✓ Notifikasi aktif!' : 'Izin ditolak di pengaturan browser.'));
+      'Notification' in window && Notification.requestPermission().then(p => alert(p === 'granted' ? 'Notifikasi aktif!' : 'Ditolak. Aktifkan di pengaturan browser.'));
     };
     return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
       className: "card"
     }, /*#__PURE__*/React.createElement("div", {
       style: {
-        fontSize: 12,
+        fontSize: 13,
         fontWeight: 600,
         marginBottom: 10,
         color: 'var(--t)'
@@ -2948,18 +2661,8 @@ function AdminApp({
     }), "Rekening Bank"), /*#__PURE__*/React.createElement("div", {
       className: "fr"
     }, /*#__PURE__*/React.createElement("div", {
-      style: {
-        marginBottom: 8
-      }
-    }, /*#__PURE__*/React.createElement("label", {
-      style: {
-        fontSize: 10,
-        fontWeight: 600,
-        color: '#666',
-        display: 'block',
-        marginBottom: 3
-      }
-    }, "NAMA BANK"), /*#__PURE__*/React.createElement("input", {
+      className: "fg"
+    }, /*#__PURE__*/React.createElement("label", null, "Nama Bank"), /*#__PURE__*/React.createElement("input", {
       className: "inp",
       value: f.bank_nama,
       onChange: e => setF({
@@ -2968,18 +2671,8 @@ function AdminApp({
       }),
       placeholder: "BRI, BCA, Mandiri..."
     })), /*#__PURE__*/React.createElement("div", {
-      style: {
-        marginBottom: 8
-      }
-    }, /*#__PURE__*/React.createElement("label", {
-      style: {
-        fontSize: 10,
-        fontWeight: 600,
-        color: '#666',
-        display: 'block',
-        marginBottom: 3
-      }
-    }, "NOMOR REKENING"), /*#__PURE__*/React.createElement("input", {
+      className: "fg"
+    }, /*#__PURE__*/React.createElement("label", null, "No. Rekening"), /*#__PURE__*/React.createElement("input", {
       className: "inp",
       value: f.bank_no,
       onChange: e => setF({
@@ -2988,87 +2681,19 @@ function AdminApp({
       }),
       placeholder: "0123-4567-8901"
     }))), /*#__PURE__*/React.createElement("div", {
-      style: {
-        marginBottom: 8
-      }
-    }, /*#__PURE__*/React.createElement("label", {
-      style: {
-        fontSize: 10,
-        fontWeight: 600,
-        color: '#666',
-        display: 'block',
-        marginBottom: 3
-      }
-    }, "ATAS NAMA"), /*#__PURE__*/React.createElement("input", {
+      className: "fg"
+    }, /*#__PURE__*/React.createElement("label", null, "Atas Nama"), /*#__PURE__*/React.createElement("input", {
       className: "inp",
       value: f.bank_atas_nama,
       onChange: e => setF({
         ...f,
         bank_atas_nama: e.target.value
-      }),
-      placeholder: "Nama pemilik rekening"
+      })
     }))), /*#__PURE__*/React.createElement("div", {
       className: "card"
     }, /*#__PURE__*/React.createElement("div", {
       style: {
-        fontSize: 12,
-        fontWeight: 600,
-        marginBottom: 10,
-        color: 'var(--t)'
-      }
-    }, /*#__PURE__*/React.createElement("i", {
-      className: "ti ti-qrcode",
-      style: {
-        marginRight: 6
-      }
-    }), "QRIS"), /*#__PURE__*/React.createElement("div", {
-      style: {
-        marginBottom: 8
-      }
-    }, /*#__PURE__*/React.createElement("label", {
-      style: {
-        fontSize: 10,
-        fontWeight: 600,
-        color: '#666',
-        display: 'block',
-        marginBottom: 3
-      }
-    }, "URL GAMBAR QRIS"), /*#__PURE__*/React.createElement("input", {
-      className: "inp",
-      value: f.qris_url,
-      onChange: e => setF({
-        ...f,
-        qris_url: e.target.value
-      }),
-      placeholder: "https://i.imgur.com/xxxx.png"
-    })), /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 10,
-        color: '#888',
-        marginBottom: 8
-      }
-    }, "Upload gambar QRIS ke ", /*#__PURE__*/React.createElement("a", {
-      href: "https://imgur.com",
-      target: "_blank",
-      style: {
-        color: 'var(--t)'
-      }
-    }, "Imgur.com"), " (gratis) \u2192 klik kanan gambar \u2192 Copy image address \u2192 paste di sini"), f.qris_url && /*#__PURE__*/React.createElement("img", {
-      src: f.qris_url,
-      style: {
-        width: 150,
-        height: 150,
-        objectFit: 'contain',
-        display: 'block',
-        margin: '0 auto',
-        border: '1px solid var(--brd)',
-        borderRadius: 8
-      }
-    })), /*#__PURE__*/React.createElement("div", {
-      className: "card"
-    }, /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 12,
+        fontSize: 13,
         fontWeight: 600,
         marginBottom: 10,
         color: 'var(--t)'
@@ -3079,18 +2704,8 @@ function AdminApp({
         marginRight: 6
       }
     }), "WhatsApp Admin"), /*#__PURE__*/React.createElement("div", {
-      style: {
-        marginBottom: 4
-      }
-    }, /*#__PURE__*/React.createElement("label", {
-      style: {
-        fontSize: 10,
-        fontWeight: 600,
-        color: '#666',
-        display: 'block',
-        marginBottom: 3
-      }
-    }, "NOMOR WA (format: 62xxx)"), /*#__PURE__*/React.createElement("input", {
+      className: "fg"
+    }, /*#__PURE__*/React.createElement("label", null, "Nomor WA (62xxx)"), /*#__PURE__*/React.createElement("input", {
       className: "inp",
       value: f.wa_admin,
       onChange: e => setF({
@@ -3103,11 +2718,11 @@ function AdminApp({
         fontSize: 10,
         color: '#888'
       }
-    }, "Anggota bisa langsung WA admin setelah konfirmasi bayar")), /*#__PURE__*/React.createElement("div", {
+    }, "Anggota bisa minta layanan jemput tabungan/angsuran via WA")), /*#__PURE__*/React.createElement("div", {
       className: "card"
     }, /*#__PURE__*/React.createElement("div", {
       style: {
-        fontSize: 12,
+        fontSize: 13,
         fontWeight: 600,
         marginBottom: 8,
         color: 'var(--t)'
@@ -3117,29 +2732,28 @@ function AdminApp({
       style: {
         marginRight: 6
       }
-    }), "Notifikasi Browser"), /*#__PURE__*/React.createElement("div", {
+    }), "Notifikasi"), /*#__PURE__*/React.createElement("div", {
       style: {
         fontSize: 11,
         color: '#666',
         marginBottom: 10
       }
-    }, "Aktifkan agar admin mendapat pop-up notifikasi saat ada konfirmasi bayar atau pengajuan pinjaman masuk."), /*#__PURE__*/React.createElement("button", {
+    }, "Aktifkan agar browser menampilkan pop-up notifikasi saat ada konfirmasi pembayaran atau pengajuan pinjaman masuk."), /*#__PURE__*/React.createElement("button", {
       className: "btn btn-sm",
       style: {
         background: 'var(--bl)',
         color: '#185FA5',
-        borderColor: '#9dc5f0'
+        border: '1px solid #9dc5f0'
       },
       onClick: reqN
     }, /*#__PURE__*/React.createElement("i", {
       className: "ti ti-bell-ringing"
-    }), " Aktifkan Notifikasi")), /*#__PURE__*/React.createElement("button", {
+    }), " Aktifkan Notifikasi Browser")), /*#__PURE__*/React.createElement("button", {
       className: "btn btn-p",
       style: {
         width: '100%',
         justifyContent: 'center',
-        padding: 10,
-        marginTop: 0
+        padding: 10
       },
       onClick: save
     }, /*#__PURE__*/React.createElement("i", {
@@ -3170,7 +2784,8 @@ function AdminApp({
       width: 36,
       height: 28,
       objectFit: "contain",
-      marginBottom: 4
+      marginBottom: 4,
+      display: "block"
     }
   }), /*#__PURE__*/React.createElement("div", {
     className: "s-brand"
@@ -3503,19 +3118,231 @@ function AdminApp({
       ...fT,
       ket: e.target.value
     })
-  })))), /*#__PURE__*/React.createElement("div", {
-    className: "adm-mob"
+  }))), /*#__PURE__*/React.createElement("div", {
+    className: "admmob"
   }, pages.map(p => /*#__PURE__*/React.createElement("button", {
     key: p.id,
-    className: `mnav-btn ${pg === p.id ? 'on' : ''}`,
-    onClick: () => setPg(p.id)
-  }, /*#__PURE__*/React.createElement("i", {
-    className: `ti ${p.icon}`
-  }), /*#__PURE__*/React.createElement("span", {
+    className: 'mnav-btn ' + (pg === p.id ? 'on' : ''),
+    onClick: () => setPg(p.id),
     style: {
-      fontSize: 9
+      flex: 1,
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      padding: '7px 0',
+      cursor: 'pointer',
+      border: 'none',
+      background: 'transparent',
+      fontFamily: 'inherit',
+      color: pg === p.id ? 'var(--t)' : '#888',
+      fontSize: 9,
+      gap: 2,
+      borderTop: pg === p.id ? '2px solid var(--t2)' : '2px solid transparent'
     }
-  }, p.lbl))))));
+  }, /*#__PURE__*/React.createElement("i", {
+    className: 'ti ' + p.icon,
+    style: {
+      fontSize: 16
+    }
+  }), p.lbl))))));
+}
+function PayModal({
+  show,
+  onClose,
+  data,
+  upd,
+  memberId,
+  nom
+}) {
+  const [jumlah, setJumlah] = useState(nom || '');
+  const [ket, setKet] = useState('');
+  const [done, setDone] = useState(false);
+  const s = data.settings || {};
+  const myName = (data.anggota || []).find(a => a.id === memberId)?.nama || '';
+  useEffect(() => {
+    if (show) {
+      setDone(false);
+      setJumlah(nom || '');
+      setKet('');
+    }
+  }, [show, nom]);
+  const submit = () => {
+    if (!jumlah) return;
+    const k = {
+      id: 'K' + Date.now(),
+      aid: memberId,
+      nama: myName,
+      tgl: TODAY,
+      nominal: +jumlah,
+      ket,
+      status: 'Menunggu'
+    };
+    upd('konfirmasi_bayar', [...(data.konfirmasi_bayar || []), k]);
+    setDone(true);
+  };
+  if (!show) return null;
+  return /*#__PURE__*/React.createElement("div", {
+    className: "modal-bg",
+    onClick: e => {
+      if (e.target === e.currentTarget) onClose();
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "modal-box"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "modal-head"
+  }, /*#__PURE__*/React.createElement("span", null, "Pembayaran"), /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-xs",
+    onClick: onClose
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "ti ti-x"
+  }))), /*#__PURE__*/React.createElement("div", {
+    className: "modal-body"
+  }, done ? /*#__PURE__*/React.createElement("div", {
+    style: {
+      textAlign: 'center',
+      padding: '16px 0'
+    }
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "ti ti-circle-check",
+    style: {
+      fontSize: 52,
+      color: '#3B6D11',
+      display: 'block',
+      marginBottom: 8
+    }
+  }), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 14,
+      fontWeight: 700,
+      marginBottom: 4
+    }
+  }, "Konfirmasi Terkirim!"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11,
+      color: '#666',
+      marginBottom: 16
+    }
+  }, "Admin akan memverifikasi pembayaran Anda."), s.wa_admin && /*#__PURE__*/React.createElement("a", {
+    href: 'https://wa.me/' + s.wa_admin + '?text=' + encodeURIComponent('Halo admin, saya ' + myName + ' sudah transfer Rp' + jumlah + (ket ? ' untuk ' + ket : '')),
+    target: "_blank",
+    style: {
+      display: 'inline-flex',
+      alignItems: 'center',
+      gap: 6,
+      background: '#25D366',
+      color: '#fff',
+      padding: '9px 18px',
+      borderRadius: 8,
+      fontSize: 12,
+      textDecoration: 'none',
+      fontWeight: 600
+    }
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "ti ti-brand-whatsapp",
+    style: {
+      fontSize: 16
+    }
+  }), "Konfirmasi via WhatsApp")) : /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      background: '#f0f4ff',
+      border: '1px solid #c7d8f8',
+      borderRadius: 10,
+      padding: 16,
+      marginBottom: 14,
+      textAlign: 'center'
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11,
+      color: '#666'
+    }
+  }, "Transfer ke rekening"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 16,
+      fontWeight: 700,
+      color: 'var(--t)',
+      marginTop: 4
+    }
+  }, s.bank_nama || '—'), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 24,
+      fontWeight: 700,
+      letterSpacing: 3,
+      margin: '6px 0',
+      color: 'var(--t3)'
+    }
+  }, s.bank_no || 'Hubungi Admin'), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12
+    }
+  }, "a.n. ", s.bank_atas_nama || 'Koperasi MAS Jatim'), s.bank_no && /*#__PURE__*/React.createElement("button", {
+    onClick: () => navigator.clipboard?.writeText(s.bank_no.replace(/[^0-9]/g, '')),
+    style: {
+      marginTop: 8,
+      background: 'none',
+      border: '1px solid var(--t)',
+      color: 'var(--t)',
+      borderRadius: 6,
+      padding: '3px 12px',
+      fontSize: 11,
+      cursor: 'pointer',
+      fontFamily: 'inherit'
+    }
+  }, "Salin Nomor")), s.wa_admin && /*#__PURE__*/React.createElement("a", {
+    href: 'https://wa.me/' + s.wa_admin + '?text=' + encodeURIComponent('Halo admin, saya ' + myName + ' minta layanan jemput pembayaran'),
+    target: "_blank",
+    style: {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: 8,
+      background: '#25D366',
+      color: '#fff',
+      padding: '11px',
+      borderRadius: 8,
+      fontSize: 13,
+      textDecoration: 'none',
+      fontWeight: 600,
+      marginBottom: 14
+    }
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "ti ti-brand-whatsapp",
+    style: {
+      fontSize: 18
+    }
+  }), "Minta Dijemput (WA Admin)"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11,
+      fontWeight: 600,
+      color: '#666',
+      marginBottom: 6
+    }
+  }, "Sudah Transfer? Isi konfirmasi:"), /*#__PURE__*/React.createElement("div", {
+    className: "fg"
+  }, /*#__PURE__*/React.createElement("label", null, "Jumlah yang ditransfer (Rp)"), /*#__PURE__*/React.createElement("input", {
+    className: "inp",
+    type: "number",
+    value: jumlah,
+    onChange: e => setJumlah(e.target.value),
+    placeholder: "0"
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "fg"
+  }, /*#__PURE__*/React.createElement("label", null, "Keterangan (opsional)"), /*#__PURE__*/React.createElement("input", {
+    className: "inp",
+    value: ket,
+    onChange: e => setKet(e.target.value),
+    placeholder: "Cicilan P001 bulan Mei"
+  })))), !done && /*#__PURE__*/React.createElement("div", {
+    className: "modal-foot"
+  }, /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-sm",
+    onClick: onClose
+  }, "Tutup"), /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-sm btn-p",
+    onClick: submit
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "ti ti-check"
+  }), " Konfirmasi Sudah Transfer"))));
 }
 /* ══════════════ MEMBER APP ══════════════ */
 function MemberApp({
@@ -3738,18 +3565,18 @@ function MemberApp({
       style: {
         display: 'flex',
         alignItems: 'center',
+        justifyContent: 'center',
         gap: 8,
         width: '100%',
-        padding: '11px 16px',
-        background: 'var(--bl)',
-        border: '1px solid var(--t)',
+        padding: '12px',
+        background: 'var(--t)',
+        color: '#fff',
+        border: 'none',
         borderRadius: 'var(--r)',
         cursor: 'pointer',
         fontFamily: 'inherit',
         fontSize: 13,
         fontWeight: 600,
-        color: 'var(--t)',
-        justifyContent: 'center',
         marginBottom: 10
       }
     }, /*#__PURE__*/React.createElement("i", {
@@ -3757,7 +3584,7 @@ function MemberApp({
       style: {
         fontSize: 18
       }
-    }), "Konfirmasi Pembayaran (Transfer / QRIS)"), myPin.filter(p => p.status === 'Aktif').length > 0 && /*#__PURE__*/React.createElement("div", {
+    }), "Transfer / Minta Dijemput"), myPin.filter(p => p.status === 'Aktif').length > 0 && /*#__PURE__*/React.createElement("div", {
       className: "card"
     }, /*#__PURE__*/React.createElement("div", {
       className: "sec-head"
@@ -4164,7 +3991,14 @@ function MemberApp({
     className: `ti ${n.icon}`
   }), /*#__PURE__*/React.createElement("span", null, n.l)))), /*#__PURE__*/React.createElement("div", {
     className: "m-content"
-  }, mp[pg], /*#__PURE__*/React.createElement(Modal, {
+  }, mp[pg], /*#__PURE__*/React.createElement(PayModal, {
+    show: mBayar,
+    onClose: () => setMBayar(false),
+    data: data,
+    upd: upd,
+    memberId: memberId,
+    nom: bayarNom
+  }), /*#__PURE__*/React.createElement(Modal, {
     show: mSetor,
     onClose: () => setMSetor(false),
     title: fSetor.jenis === 'setor' ? 'Setor Simpanan' : 'Tarik Simpanan',
@@ -4205,14 +4039,7 @@ function MemberApp({
     value: "setor"
   }, "Setor (tambah)"), /*#__PURE__*/React.createElement("option", {
     value: "tarik"
-  }, "Tarik (kurangi)")))), /*#__PURE__*/React.createElement(PayModal, {
-    show: mBayar,
-    onClose: () => setMBayar(false),
-    data: data,
-    upd: upd,
-    memberId: memberId,
-    defaultNom: bayarNom
-  }), /*#__PURE__*/React.createElement(Modal, {
+  }, "Tarik (kurangi)")))), /*#__PURE__*/React.createElement(Modal, {
     show: mAjukan,
     onClose: () => setMAjukan(false),
     title: "Ajukan Pinjaman",
@@ -4289,9 +4116,9 @@ function Login({
     style: {
       width: 60,
       height: 48,
-      objectFit: 'contain',
-      display: 'block',
-      margin: '0 auto 8px'
+      objectFit: "contain",
+      display: "block",
+      margin: "0 auto 8px"
     }
   }), /*#__PURE__*/React.createElement("div", {
     style: {
@@ -4367,7 +4194,14 @@ function Login({
     onClick: tryAdmin
   }, /*#__PURE__*/React.createElement("i", {
     className: "ti ti-login"
-  }), " Masuk sebagai Admin")) : /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+  }), " Masuk sebagai Admin"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 10,
+      color: '#666',
+      textAlign: 'center',
+      marginTop: 8
+    }
+  })) : /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     className: "fg"
   }, /*#__PURE__*/React.createElement("label", null, "Pilih Nama Anggota"), /*#__PURE__*/React.createElement("select", {
     className: "sel",
@@ -4404,7 +4238,14 @@ function Login({
       textAlign: 'center',
       marginBottom: 6
     }
-  }, err))));
+  }, err), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 10,
+      color: '#666',
+      textAlign: 'center',
+      marginTop: 4
+    }
+  }))));
 }
 
 /* ══════════════ MAIN APP ══════════════ */
