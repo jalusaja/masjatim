@@ -3503,21 +3503,20 @@ function AdminApp({
       ...fT,
       ket: e.target.value
     })
-  }))))));
+  })))), /*#__PURE__*/React.createElement("div", {
+    className: "adm-mob"
+  }, pages.map(p => /*#__PURE__*/React.createElement("button", {
+    key: p.id,
+    className: `mnav-btn ${pg === p.id ? 'on' : ''}`,
+    onClick: () => setPg(p.id)
+  }, /*#__PURE__*/React.createElement("i", {
+    className: `ti ${p.icon}`
+  }), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 9
+    }
+  }, p.lbl))))));
 }
-/*#__PURE__*/React.createElement("div", {
-  className: "adm-mob"
-}, pages.map(p => /*#__PURE__*/React.createElement("button", {
-  key: p.id,
-  className: `mnav-btn ${pg === p.id ? 'on' : ''}`,
-  onClick: () => setPg(p.id)
-}, /*#__PURE__*/React.createElement("i", {
-  className: `ti ${p.icon}`
-}), /*#__PURE__*/React.createElement("span", {
-  style: {
-    fontSize: 9
-  }
-}, p.lbl))));
 /* ══════════════ MEMBER APP ══════════════ */
 function MemberApp({
   data,
