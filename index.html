@@ -1434,6 +1434,563 @@ function Login({
     }
   }, err))));
 }
+function MutasiModal({
+  show,
+  onClose,
+  initAid,
+  data
+}) {
+  const myAnggota = data.anggota || [];
+  const myTranx = data.transaksi || [];
+  const mySimpanan = data.simpanan || [];
+  const myPinjaman = data.pinjaman || [];
+  const [selAid, setSelAid] = useState(initAid || myAnggota[0]?.id || '');
+  const [df, setDf] = useState('');
+  const [dt, setDt] = useState('');
+  const [tabM, setTabM] = useState('semua');
+
+  // Update selAid saat initAid berubah
+  React.useEffect(() => {
+    if (initAid) setSelAid(initAid);
+  }, [initAid]);
+  const me = myAnggota.find(a => a.id === selAid) || {};
+  const rekSmp = mySimpanan.filter(s => s.aid === selAid);
+  const rekPin = myPinjaman.filter(p => p.aid === selAid);
+  const baseTx = [...myTranx].filter(t => t.aid === selAid).filter(t => !df || t.tgl >= df).filter(t => !dt || t.tgl <= dt).sort((a, b) => (a.tgl || '').localeCompare(b.tgl || ''));
+  const filterMap = {
+    semua: baseTx,
+    simpanan: baseTx.filter(t => ['Setor Simpanan', 'Tarik Simpanan', 'Buka Simpanan', 'Pembayaran'].includes(t.jenis)),
+    pinjaman: baseTx.filter(t => ['Pencairan', 'Angsuran', 'Pengajuan Pinjaman'].includes(t.jenis))
+  };
+  const txShow = filterMap[tabM] || baseTx;
+  let runSaldo = 0;
+  const txRows = txShow.map((t, i) => {
+    if (t.tipe === 'K') runSaldo += Number(t.nom || 0);else runSaldo -= Number(t.nom || 0);
+    return {
+      no: i + 1,
+      tgl: t.tgl,
+      jenis: t.jenis,
+      ket: t.ket || '',
+      nom: Number(t.nom || 0),
+      tipe: t.tipe,
+      saldo: runSaldo,
+      id: t.id || i
+    };
+  });
+  const totK = txShow.filter(t => t.tipe === 'K').reduce((s, t) => s + Number(t.nom || 0), 0);
+  const totD = txShow.filter(t => t.tipe === 'D').reduce((s, t) => s + Number(t.nom || 0), 0);
+  const cetakPDF = () => {
+    if (!window.jspdf) {
+      alert('Library PDF belum tersedia');
+      return;
+    }
+    try {
+      const {
+        jsPDF
+      } = window.jspdf;
+      const doc = new jsPDF();
+      doc.setFillColor(15, 33, 73);
+      doc.rect(0, 0, 210, 32, 'F');
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(13);
+      doc.setFont('helvetica', 'bold');
+      doc.text('KOPERASI MANDIRI ARTHA SEJAHTERA JATIM', 105, 11, {
+        align: 'center'
+      });
+      doc.setFontSize(9);
+      doc.setFont('helvetica', 'normal');
+      doc.text('Buku Rekening Mutasi', 105, 19, {
+        align: 'center'
+      });
+      let y = 40;
+      doc.setTextColor(0, 0, 0);
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'bold');
+      doc.text('DATA ANGGOTA', 14, y);
+      y += 5;
+      doc.setDrawColor(15, 33, 73);
+      doc.setLineWidth(0.4);
+      doc.line(14, y, 196, y);
+      y += 5;
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(9);
+      [['Nama', me.nama || '-'], ['No. Anggota', me.id || '-'], ['Periode', (df || 'Awal') + ' s/d ' + (dt || 'Sekarang')]].forEach(([l, v]) => {
+        doc.setTextColor(80, 80, 80);
+        doc.text(l + ' :', 14, y);
+        doc.setTextColor(0, 0, 0);
+        doc.setFont('helvetica', 'bold');
+        doc.text(String(v), 55, y);
+        doc.setFont('helvetica', 'normal');
+        y += 6;
+      });
+      if (rekSmp.length > 0) {
+        y += 3;
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(15, 33, 73);
+        doc.text('REKENING SIMPANAN', 14, y);
+        y += 5;
+        doc.line(14, y, 196, y);
+        y += 3;
+        rekSmp.forEach(s => {
+          doc.setFont('helvetica', 'normal');
+          doc.setTextColor(0, 0, 0);
+          doc.setFontSize(9);
+          doc.text((s.jenis || '') + ' (' + s.id + ')', 14, y);
+          doc.setFont('helvetica', 'bold');
+          doc.text('Saldo: ' + fmt(s.saldo || 0), 196, y, {
+            align: 'right'
+          });
+          doc.setFont('helvetica', 'normal');
+          y += 5;
+        });
+      }
+      y += 3;
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(15, 33, 73);
+      doc.setFontSize(10);
+      doc.text('RIWAYAT MUTASI', 14, y);
+      y += 5;
+      doc.setFillColor(15, 33, 73);
+      doc.rect(14, y - 4, 182, 7, 'F');
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(8);
+      [['No', 14], ['Tanggal', 22], ['Keterangan', 50], ['Kredit', 108], ['Debet', 140], ['Saldo', 170]].forEach(([h, x]) => doc.text(h, x, y));
+      y += 7;
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(0, 0, 0);
+      txRows.forEach((r, i) => {
+        if (y > 272) {
+          doc.addPage();
+          y = 20;
+        }
+        if (i % 2 === 0) doc.setFillColor(245, 248, 255);else doc.setFillColor(255, 255, 255);
+        doc.rect(14, y - 4, 182, 7, 'F');
+        doc.setFontSize(8);
+        doc.setTextColor(80, 80, 80);
+        doc.text(String(r.no), 14, y);
+        doc.setTextColor(0, 0, 0);
+        doc.text(fmtD(r.tgl), 22, y);
+        doc.text((r.jenis + (r.ket ? ' - ' + r.ket : '')).substring(0, 26), 50, y);
+        if (r.tipe === 'K') {
+          doc.setTextColor(30, 110, 30);
+          doc.text(fmt(r.nom), 130, y, {
+            align: 'right'
+          });
+        } else {
+          doc.setTextColor(160, 40, 40);
+          doc.text(fmt(r.nom), 162, y, {
+            align: 'right'
+          });
+        }
+        doc.setTextColor(15, 33, 73);
+        doc.setFont('helvetica', 'bold');
+        doc.text(fmt(r.saldo), 192, y, {
+          align: 'right'
+        });
+        doc.setFont('helvetica', 'normal');
+        y += 7;
+      });
+      if (txRows.length === 0) {
+        doc.setTextColor(120, 120, 120);
+        doc.text('Tidak ada transaksi pada periode ini', 105, y, {
+          align: 'center'
+        });
+        y += 7;
+      }
+      y += 2;
+      doc.setFillColor(15, 33, 73);
+      doc.rect(14, y - 4, 182, 8, 'F');
+      doc.setTextColor(255, 255, 255);
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(8);
+      doc.text('TOTAL', 14, y);
+      doc.text(fmt(totK), 130, y, {
+        align: 'right'
+      });
+      doc.text(fmt(totD), 162, y, {
+        align: 'right'
+      });
+      doc.text(fmt(runSaldo), 192, y, {
+        align: 'right'
+      });
+      y += 14;
+      if (y > 260) {
+        doc.addPage();
+        y = 20;
+      }
+      doc.setTextColor(0, 0, 0);
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(9);
+      doc.text('Dicetak: ' + new Date().toLocaleString('id-ID'), 14, y);
+      y += 8;
+      doc.text('Mengetahui,', 160, y, {
+        align: 'center'
+      });
+      y += 18;
+      doc.line(135, y, 185, y);
+      y += 5;
+      doc.text('Pengurus Koperasi', 160, y, {
+        align: 'center'
+      });
+      doc.save('Mutasi-' + (me.nama || 'Anggota').replace(/\s+/g, '-') + '.pdf');
+    } catch (err) {
+      alert('Gagal cetak: ' + err.message);
+    }
+  };
+  if (!show) return null;
+  return /*#__PURE__*/React.createElement("div", {
+    className: "modal-bg",
+    onClick: e => {
+      if (e.target === e.currentTarget) onClose();
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "modal-box",
+    style: {
+      width: '92vw',
+      maxWidth: 860,
+      maxHeight: '95vh'
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "modal-head"
+  }, /*#__PURE__*/React.createElement("span", null, /*#__PURE__*/React.createElement("i", {
+    className: "ti ti-book",
+    style: {
+      marginRight: 6
+    }
+  }), "Mutasi Rekening"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: 'flex',
+      gap: 8,
+      alignItems: 'center'
+    }
+  }, /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-sm btn-p",
+    onClick: cetakPDF
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "ti ti-printer"
+  }), " Cetak PDF"), /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-xs",
+    onClick: onClose
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "ti ti-x"
+  })))), /*#__PURE__*/React.createElement("div", {
+    className: "modal-body",
+    style: {
+      padding: '12px 16px'
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: 'flex',
+      gap: 8,
+      flexWrap: 'wrap',
+      marginBottom: 12,
+      alignItems: 'flex-end'
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      flex: 2,
+      minWidth: 150
+    }
+  }, /*#__PURE__*/React.createElement("label", {
+    style: {
+      fontSize: 11,
+      fontWeight: 600,
+      color: '#666',
+      display: 'block',
+      marginBottom: 3
+    }
+  }, "ANGGOTA"), /*#__PURE__*/React.createElement("select", {
+    className: "sel",
+    value: selAid,
+    onChange: e => setSelAid(e.target.value)
+  }, myAnggota.map(a => /*#__PURE__*/React.createElement("option", {
+    key: a.id,
+    value: a.id
+  }, a.nama, " (", a.id, ")")))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      flex: 1,
+      minWidth: 110
+    }
+  }, /*#__PURE__*/React.createElement("label", {
+    style: {
+      fontSize: 11,
+      fontWeight: 600,
+      color: '#666',
+      display: 'block',
+      marginBottom: 3
+    }
+  }, "DARI"), /*#__PURE__*/React.createElement("input", {
+    className: "inp",
+    type: "date",
+    value: df,
+    onChange: e => setDf(e.target.value)
+  })), /*#__PURE__*/React.createElement("div", {
+    style: {
+      flex: 1,
+      minWidth: 110
+    }
+  }, /*#__PURE__*/React.createElement("label", {
+    style: {
+      fontSize: 11,
+      fontWeight: 600,
+      color: '#666',
+      display: 'block',
+      marginBottom: 3
+    }
+  }, "SAMPAI"), /*#__PURE__*/React.createElement("input", {
+    className: "inp",
+    type: "date",
+    value: dt,
+    onChange: e => setDt(e.target.value)
+  }))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: 'flex',
+      gap: 8,
+      marginBottom: 10,
+      flexWrap: 'wrap'
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      flex: '0 0 auto',
+      background: '#f0f4ff',
+      border: '1px solid #c7d8f8',
+      borderRadius: 8,
+      padding: '10px 14px',
+      minWidth: 170
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      color: '#666',
+      marginBottom: 2
+    }
+  }, "Anggota"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 15,
+      fontWeight: 700
+    }
+  }, me.nama || '—'), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      color: '#666'
+    }
+  }, me.id, " \xB7 ", me.phone || '-')), rekSmp.map(s => /*#__PURE__*/React.createElement("div", {
+    key: s.id,
+    style: {
+      flex: 1,
+      background: 'var(--tl)',
+      border: '1px solid var(--t2)',
+      borderRadius: 8,
+      padding: '10px 14px',
+      minWidth: 120
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11,
+      marginBottom: 3
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    className: 'bdg ' + (JB[s.jenis] || 'bt')
+  }, s.jenis)), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 15,
+      fontWeight: 700,
+      color: 'var(--t)'
+    }
+  }, fmt(s.saldo || 0)), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11,
+      color: '#666'
+    }
+  }, s.id))), rekPin.filter(p => p.status !== 'Lunas').map(p => /*#__PURE__*/React.createElement("div", {
+    key: p.id,
+    style: {
+      flex: 1,
+      background: '#fff5f5',
+      border: '1px solid #F0B8B8',
+      borderRadius: 8,
+      padding: '10px 14px',
+      minWidth: 120
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11,
+      marginBottom: 3
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "bdg br"
+  }, p.status)), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 15,
+      fontWeight: 700,
+      color: '#A32D2D'
+    }
+  }, fmt(p.sisa || 0)), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11,
+      color: '#666'
+    }
+  }, p.id, " \xB7 sisa ", (p.tenor || 0) - (p.ke || 0), " bln")))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: 'flex',
+      alignItems: 'center',
+      borderBottom: '2px solid var(--brd)',
+      marginBottom: 0
+    }
+  }, [['semua', 'Semua'], ['simpanan', 'Simpanan'], ['pinjaman', 'Pinjaman/Angsuran']].map(([id, lbl]) => /*#__PURE__*/React.createElement("button", {
+    key: id,
+    onClick: () => setTabM(id),
+    style: {
+      padding: '8px 14px',
+      cursor: 'pointer',
+      border: 'none',
+      background: 'transparent',
+      fontFamily: 'inherit',
+      fontSize: 13,
+      fontWeight: 600,
+      color: tabM === id ? 'var(--t)' : '#888',
+      borderBottom: tabM === id ? '2px solid var(--t)' : '2px solid transparent',
+      marginBottom: -2
+    }
+  }, lbl)), /*#__PURE__*/React.createElement("div", {
+    style: {
+      flex: 1
+    }
+  }), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 13,
+      color: '#3B6D11',
+      fontWeight: 600,
+      marginRight: 12
+    }
+  }, "\u2191 ", fmt(totK)), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 13,
+      color: '#A32D2D',
+      fontWeight: 600,
+      marginRight: 8
+    }
+  }, "\u2193 ", fmt(totD))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      overflowX: 'auto',
+      maxHeight: 340,
+      overflowY: 'auto',
+      borderRadius: '0 0 8px 8px',
+      border: '1px solid var(--brd)',
+      borderTop: 'none'
+    }
+  }, /*#__PURE__*/React.createElement("table", null, /*#__PURE__*/React.createElement("thead", {
+    style: {
+      position: 'sticky',
+      top: 0,
+      background: '#f7f7f3',
+      zIndex: 1
+    }
+  }, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("th", {
+    style: {
+      width: 30
+    }
+  }, "No"), /*#__PURE__*/React.createElement("th", null, "Tanggal"), /*#__PURE__*/React.createElement("th", null, "Jenis"), /*#__PURE__*/React.createElement("th", null, "Keterangan"), /*#__PURE__*/React.createElement("th", {
+    style: {
+      textAlign: 'right'
+    }
+  }, "Kredit (+)"), /*#__PURE__*/React.createElement("th", {
+    style: {
+      textAlign: 'right'
+    }
+  }, "Debet (\u2212)"), /*#__PURE__*/React.createElement("th", {
+    style: {
+      textAlign: 'right',
+      color: 'var(--t)'
+    }
+  }, "Saldo"))), /*#__PURE__*/React.createElement("tbody", null, txRows.length === 0 ? /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", {
+    colSpan: 7,
+    style: {
+      textAlign: 'center',
+      padding: 24,
+      color: '#aaa'
+    }
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "ti ti-inbox",
+    style: {
+      fontSize: 28,
+      display: 'block',
+      marginBottom: 6
+    }
+  }), "Tidak ada transaksi", df || dt ? ' pada periode ini' : '')) : txRows.map(r => /*#__PURE__*/React.createElement("tr", {
+    key: r.id
+  }, /*#__PURE__*/React.createElement("td", {
+    style: {
+      color: '#aaa',
+      fontSize: 12,
+      textAlign: 'center'
+    }
+  }, r.no), /*#__PURE__*/React.createElement("td", {
+    style: {
+      whiteSpace: 'nowrap'
+    }
+  }, fmtD(r.tgl)), /*#__PURE__*/React.createElement("td", null, /*#__PURE__*/React.createElement("span", {
+    className: 'bdg ' + (r.tipe === 'K' ? 'bg' : 'br'),
+    style: {
+      fontSize: 11,
+      whiteSpace: 'nowrap'
+    }
+  }, r.jenis)), /*#__PURE__*/React.createElement("td", {
+    style: {
+      color: '#666',
+      fontSize: 13
+    }
+  }, r.ket), /*#__PURE__*/React.createElement("td", {
+    style: {
+      textAlign: 'right',
+      fontWeight: 600,
+      color: '#3B6D11'
+    }
+  }, r.tipe === 'K' ? fmt(r.nom) : '—'), /*#__PURE__*/React.createElement("td", {
+    style: {
+      textAlign: 'right',
+      fontWeight: 600,
+      color: '#A32D2D'
+    }
+  }, r.tipe === 'D' ? fmt(r.nom) : '—'), /*#__PURE__*/React.createElement("td", {
+    style: {
+      textAlign: 'right',
+      fontWeight: 700,
+      color: 'var(--t3)'
+    }
+  }, fmt(r.saldo))))), txRows.length > 0 && /*#__PURE__*/React.createElement("tfoot", null, /*#__PURE__*/React.createElement("tr", {
+    style: {
+      background: 'var(--tl)',
+      position: 'sticky',
+      bottom: 0
+    }
+  }, /*#__PURE__*/React.createElement("td", {
+    colSpan: 4,
+    style: {
+      fontWeight: 700,
+      fontSize: 13,
+      padding: 8
+    }
+  }, "TOTAL"), /*#__PURE__*/React.createElement("td", {
+    style: {
+      textAlign: 'right',
+      fontWeight: 700,
+      color: '#3B6D11'
+    }
+  }, "+ ", fmt(totK)), /*#__PURE__*/React.createElement("td", {
+    style: {
+      textAlign: 'right',
+      fontWeight: 700,
+      color: '#A32D2D'
+    }
+  }, "\u2212 ", fmt(totD)), /*#__PURE__*/React.createElement("td", {
+    style: {
+      textAlign: 'right',
+      fontWeight: 700,
+      color: 'var(--t)'
+    }
+  }, "  ", fmt(runSaldo)))))))));
+}
 
 /* ═══ ADMIN APP ═══ */
 function AdminApp({
@@ -1474,6 +2031,8 @@ function AdminApp({
   const [fJ, setFJ] = useState('Semua');
   const [readIds, setReadIds] = useState([]);
   const [showImport, setShowImport] = useState(false);
+  const [mutasiAid, setMutasiAid] = useState('');
+  const [showMutasi, setShowMutasi] = useState(false);
   const _pk = useRef(-1),
     _pp = useRef(-1);
   useEffect(() => {
@@ -1643,10 +2202,6 @@ function AdminApp({
     icon: 'ti-chart-bar',
     lbl: 'Laporan'
   }, {
-    id: 'mutasi',
-    icon: 'ti-book',
-    lbl: 'Mutasi'
-  }, {
     id: 'pengaturan',
     icon: 'ti-settings',
     lbl: 'Pengaturan'
@@ -1658,7 +2213,6 @@ function AdminApp({
     pinjaman: 'Pinjaman',
     transaksi: 'Transaksi',
     laporan: 'Laporan',
-    mutasi: 'Mutasi & Cetak',
     pengaturan: 'Pengaturan'
   };
   const Dash = () => {
@@ -1936,7 +2490,12 @@ function AdminApp({
     }, a.nik)), /*#__PURE__*/React.createElement("td", null, a.phone), /*#__PURE__*/React.createElement("td", null, fmtD(a.bergabung)), /*#__PURE__*/React.createElement("td", null, /*#__PURE__*/React.createElement(Bdg, {
       cls: a.status === 'Aktif' ? 'bg' : 'br',
       ch: a.status
-    })), /*#__PURE__*/React.createElement("td", null, /*#__PURE__*/React.createElement("button", {
+    })), /*#__PURE__*/React.createElement("td", null, /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: 'flex',
+        gap: 4
+      }
+    }, /*#__PURE__*/React.createElement("button", {
       className: "btn btn-xs",
       onClick: () => {
         setFA({
@@ -1946,7 +2505,20 @@ function AdminApp({
       }
     }, /*#__PURE__*/React.createElement("i", {
       className: "ti ti-edit"
-    }))))))))));
+    })), /*#__PURE__*/React.createElement("button", {
+      className: "btn btn-xs",
+      style: {
+        background: 'var(--tl)',
+        color: 'var(--t)',
+        border: '1px solid var(--t2)'
+      },
+      onClick: () => {
+        setMutasiAid(a.id);
+        setShowMutasi(true);
+      }
+    }, /*#__PURE__*/React.createElement("i", {
+      className: "ti ti-book"
+    }), " Mutasi"))))))))));
   };
   const PgS = () => {
     const fl = fJ === 'Semua' ? simpanan : simpanan.filter(s => s.jenis === fJ);
@@ -2267,7 +2839,9 @@ function AdminApp({
       }
     }, fmt(totS))), /*#__PURE__*/React.createElement("td", null, /*#__PURE__*/React.createElement("strong", null, "100%")))))));
   };
-  const PgMutasi = () => {
+
+  // PgMutasi handled by MutasiModal
+  const PgMutasiX = () => {
     const myAnggota = anggota || [];
     const myTranx = transaksi || [];
     const mySimpanan = simpanan || [];
@@ -3036,7 +3610,12 @@ function AdminApp({
     dark: false
   }))), /*#__PURE__*/React.createElement("div", {
     className: "content-area"
-  }, pc[pg], /*#__PURE__*/React.createElement(ImportModal, {
+  }, pc[pg], /*#__PURE__*/React.createElement(MutasiModal, {
+    show: showMutasi,
+    onClose: () => setShowMutasi(false),
+    initAid: mutasiAid,
+    data: data
+  }), /*#__PURE__*/React.createElement(ImportModal, {
     show: showImport,
     onClose: () => setShowImport(false),
     data: data,
